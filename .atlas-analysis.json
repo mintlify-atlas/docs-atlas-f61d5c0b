@@ -1,0 +1,99 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "bormeparser",
+  "projectDescription": "A Python library for parsing BORME files from the Spanish Official Mercantile Register",
+  "theme": "palm",
+  "primaryColor": "#040404",
+  "lightColor": "#888888",
+  "darkColor": "#cfcfcf",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/borme-overview",
+              "concepts/file-formats",
+              "concepts/sections"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/parsing-files",
+              "guides/downloading-files",
+              "guides/extracting-data",
+              "guides/converting-to-json"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core Classes",
+            "pages": [
+              "api/borme",
+              "api/parser"
+            ]
+          },
+          {
+            "group": "Download Functions",
+            "pages": [
+              "api/download"
+            ]
+          },
+          {
+            "group": "Data Models",
+            "pages": [
+              "api/acto",
+              "api/cargo",
+              "api/provincia",
+              "api/seccion"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/utils",
+              "api/exceptions"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Parse BORME PDF and XML files",
+    "Download BORME files from official sources",
+    "Extract company registry data and business acts",
+    "Convert BORME data to JSON format",
+    "Support for multiple Spanish provinces and sections",
+    "Multiple parser backends (PyPDF2, lxml)"
+  ],
+  "publicApiSurface": [
+    "Borme",
+    "BormeXML",
+    "parse()",
+    "download_xml()",
+    "download_pdfs()",
+    "download_pdf()",
+    "ACTO",
+    "CARGO",
+    "PROVINCIA",
+    "SECCION",
+    "EMISOR",
+    "CONFIG"
+  ]
+}
