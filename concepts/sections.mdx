@@ -1,0 +1,417 @@
+---
+title: 'BORME Sections'
+description: 'Understanding Sections A, B, and C of the Spanish business registry bulletin'
+---
+
+## Section Overview
+
+BORME organizes its daily publications into three distinct sections, each containing different types of mercantile registry information. Understanding these sections is essential for efficiently accessing the specific data you need.
+
+<CardGroup cols={3}>
+  <Card title="Section A" icon="clipboard-list">
+    Registered acts (Actos inscritos)
+  </Card>
+  <Card title="Section B" icon="file-contract">
+    Other published acts
+  </Card>
+  <Card title="Section C" icon="bullhorn">
+    Public announcements
+  </Card>
+</CardGroup>
+
+## Section Structure
+
+All sections fall under "SECCIÓN PRIMERA" (First Section) with different subsections:
+
+```python
+# From bormeparser/seccion.py:20-36
+class SECCION:
+    A = 'A'
+    B = 'B'
+    C = 'C'
+```
+
+See `bormeparser/seccion.py:20-36` for the implementation.
+
+## Section A: Actos Inscritos
+
+**Official Name**: "SECCIÓN PRIMERA - Actos inscritos"
+
+Section A contains **registered acts** - the core business registry data that has been officially inscribed in the Mercantile Register.
+
+### What Section A Contains
+
+Section A is the most comprehensive section, containing all types of company registry acts:
+
+<AccordionGroup>
+  <Accordion title="Company Lifecycle">
+    - **Constitución** (Incorporation): New company formations
+    - **Disolución** (Dissolution): Company closures
+    - **Extinción** (Extinction): Complete termination
+    - **Liquidación** (Liquidation): Winding-up process
+    - **Transformación de sociedad** (Transformation): Legal form changes
+    - **Fusión por absorción** (Merger by absorption)
+    - **Fusión por unión** (Merger by union)
+    - **Escisión parcial** (Partial split)
+    - **Escisión total** (Total split)
+  </Accordion>
+
+  <Accordion title="Corporate Governance">
+    - **Nombramientos** (Appointments): New directors, officers, administrators
+    - **Revocaciones** (Revocations): Removal of officers
+    - **Ceses/Dimisiones** (Resignations): Officer departures
+    - **Reelecciones** (Re-elections): Officer renewals
+    - **Cancelaciones de oficio de nombramientos**: Official cancellations
+  </Accordion>
+
+  <Accordion title="Capital and Structure">
+    - **Ampliación de capital** (Capital increase)
+    - **Reducción de capital** (Capital reduction)
+    - **Desembolso de dividendos pasivos**: Dividend disbursements
+    - **Emisión de obligaciones**: Bond issuances
+    - **Sociedad unipersonal**: Single-shareholder company status
+    - **Declaración de unipersonalidad**: Unipersonality declaration
+    - **Pérdida del caracter de unipersonalidad**: Loss of unipersonal status
+  </Accordion>
+
+  <Accordion title="Company Changes">
+    - **Cambio de denominación social** (Name change)
+    - **Cambio de domicilio social** (Address change)
+    - **Cambio de objeto social** (Business purpose change)
+    - **Ampliación del objeto social**: Business purpose expansion
+    - **Modificaciones estatutarias**: Statutory modifications
+    - **Modificación de duración**: Duration changes
+    - **Modificación de poderes**: Power of attorney modifications
+  </Accordion>
+
+  <Accordion title="Legal and Financial">
+    - **Situación concursal** (Bankruptcy situation)
+    - **Suspensión de pagos** (Suspension of payments)
+    - **Quiebra** (Bankruptcy)
+    - **Adaptación Ley 2/95**: Adaptation to Law 2/95
+    - **Adaptación Ley 44/2015**: Adaptation to Law 44/2015
+    - **Artículo 378.5 del Reglamento del Registro Mercantil**
+  </Accordion>
+
+  <Accordion title="Branches and Other">
+    - **Apertura de sucursal** (Branch opening)
+    - **Cierre de Sucursal** (Branch closure)
+    - **Primera sucursal de sociedad extranjera**: First branch of foreign company
+    - **Página web de la sociedad**: Company website
+    - **Datos registrales**: Registry data
+    - **Fe de erratas**: Errata notices
+    - **Otros conceptos**: Other concepts
+  </Accordion>
+</AccordionGroup>
+
+### Section A Organization
+
+Section A is organized by **province**, with separate PDF files for each province:
+
+```
+BORME-A-2016-101-28.pdf (Madrid)
+BORME-A-2016-101-29.pdf (Málaga)
+BORME-A-2016-101-08.pdf (Barcelona)
+...
+```
+
+Each provincial file contains all registered acts for companies in that province's mercantile registry.
+
+<Info>
+Province codes are 2-digit numbers. For example: 28 = Madrid, 29 = Málaga, 08 = Barcelona. See `bormeparser/provincia.py` for the complete list.
+</Info>
+
+### Data Structure in Section A
+
+Each company announcement (anuncio) in Section A contains:
+
+1. **Company identification**
+   - Company name (empresa)
+   - Registry office (registro)
+   - Announcement number (id)
+
+2. **Acts (actos)**
+   - One or more registered acts
+   - Each act has a type and associated data
+
+3. **Registry data (datos registrales)**
+   - Official registry information
+   - Registration numbers and dates
+
+```python
+# Example from bormeparser/borme.py:142-156
+class BormeAnuncio(object):
+    def __init__(self, id, empresa, actos, extra, datos_registrales=None):
+        self.id = id
+        self.empresa = empresa
+        self.registro = extra["registro"]
+        self.sucursal = extra["sucursal"]
+        self.liquidacion = extra["liquidacion"]
+        self.datos_registrales = datos_registrales or ""
+```
+
+## Section B: Otros Actos
+
+**Official Name**: "SECCIÓN PRIMERA - Otros actos publicados en el Registro Mercantil"
+
+Section B contains **other acts published in the Mercantile Register** that don't fall under the main registered acts category.
+
+### What Section B Contains
+
+Section B typically includes:
+
+- **Registry closures**: Provisional closures of registry entries
+  - Cierre provisional por baja en el índice de Entidades Jurídicas
+  - Cierre provisional por revocación del NIF
+  - Cierre provisional por Impuesto de Sociedades
+
+- **Registry reopenings**: Reapertura hoja registral
+
+- **Reactivations**: Reactivación de la sociedad
+
+- **Administrative acts**: Various administrative registry actions
+
+- **First registrations**: Primera inscripción
+
+- **Preventive annotations**:
+  - Anotación preventiva por demanda de impugnación
+  - Anotación preventiva por declaración de deudor fallido
+
+<Note>
+Section B acts are generally administrative or procedural in nature, as opposed to the substantive business acts in Section A.
+</Note>
+
+### Section B Organization
+
+Like Section A, Section B is also organized by **province**:
+
+```
+BORME-B-2016-101-28.pdf (Madrid)
+BORME-B-2016-101-29.pdf (Málaga)
+...
+```
+
+<Warning>
+Not all provinces may have Section B publications on a given day. Section B is published only when there are relevant acts to report.
+</Warning>
+
+## Section C: Anuncios
+
+**Official Name**: "Otros anuncios" (Other announcements)
+
+Section C contains **public announcements** that companies are required to publish, such as shareholder meeting notices and corporate decisions.
+
+### What Section C Contains
+
+<CardGroup cols={2}>
+  <Card title="Shareholder Meetings" icon="users">
+    Convocatorias de juntas - Notices of annual general meetings and extraordinary meetings
+  </Card>
+  <Card title="Capital Changes" icon="coins">
+    Public notices of capital increases and reductions requiring shareholder approval
+  </Card>
+  <Card title="Financial Announcements" icon="chart-line">
+    Annual accounts, balance sheets, and financial statements
+  </Card>
+  <Card title="Other Public Notices" icon="bell">
+    Various announcements companies must legally publish
+  </Card>
+</CardGroup>
+
+### Section C Organization
+
+Unlike Sections A and B, Section C is **NOT organized by province**. Instead, it's organized by announcement type (emisor):
+
+```python
+# Example structure from bormeparser/download.py:220-233
+{
+    'CONVOCATORIAS DE JUNTAS': {
+        'AUTOBUSES INTERURBANOS, S.A.': 'https://...',
+        'BANCOFAR, S.A.': 'https://...'
+    },
+    'AUMENTO DE CAPITAL': {
+        'BRANDCONT SERVER, S.L.': 'https://...'
+    },
+    'REDUCCIÓN DE CAPITAL': {
+        'ABENGOA, S.A.': 'https://...'
+    }
+}
+```
+
+### Section C File Format
+
+Section C files use a different naming convention:
+
+```
+BORME-C-{YEAR}-{ANNOUNCEMENT_NUMBER}.{pdf|xml|htm}
+
+Example: BORME-C-2016-2310.pdf
+```
+
+Each announcement number corresponds to a single company announcement.
+
+<Info>
+Section C is available in PDF, XML, and **HTML** formats. The HTML format can be easier to parse for Section C data.
+</Info>
+
+### Accessing Section C
+
+```python
+from bormeparser import BormeXML
+import datetime
+
+date = datetime.date(2016, 4, 20)
+bxml = BormeXML.from_date(date)
+
+# Get Section C URLs (PDF format)
+urls_pdf = bxml.get_url_seccion_c(date, format='pdf')
+
+# Get Section C URLs (HTML format)
+urls_html = bxml.get_url_seccion_c(date, format='html')
+
+# Get Section C URLs (XML format)
+urls_xml = bxml.get_url_seccion_c(date, format='xml')
+```
+
+See `bormeparser/download.py:220-266` for the Section C implementation.
+
+## SECCION Enum Usage
+
+The bormeparser library provides a `SECCION` class for type-safe section references:
+
+```python
+from bormeparser.seccion import SECCION
+
+# Use the enum constants
+print(SECCION.A)  # 'A'
+print(SECCION.B)  # 'B'
+print(SECCION.C)  # 'C'
+
+# Convert from BORME text
+seccion = SECCION.from_borme(
+    seccion='SECCIÓN PRIMERA',
+    subseccion='Actos inscritos'
+)
+print(seccion)  # 'A'
+```
+
+See `bormeparser/seccion.py:26-36` for the `from_borme()` method.
+
+## Section Comparison
+
+<Accordion title="Detailed Section Comparison">
+| Feature | Section A | Section B | Section C |
+|---------|-----------|-----------|----------|
+| **Official name** | Actos inscritos | Otros actos publicados en el RM | Otros anuncios |
+| **Content type** | Registered acts | Other published acts | Public announcements |
+| **Organized by** | Province | Province | Announcement type |
+| **File naming** | BORME-A-YYYY-NBO-PP | BORME-B-YYYY-NBO-PP | BORME-C-YYYY-NNNN |
+| **Available formats** | PDF, XML metadata | PDF, XML metadata | PDF, XML, HTML |
+| **Frequency** | Daily (most provinces) | As needed | As needed |
+| **Typical volume** | High | Low | Medium |
+| **Company acts** | 50+ types | ~10 types | Announcements only |
+</Accordion>
+
+## Choosing the Right Section
+
+<Steps>
+  <Step title="For company incorporations, dissolutions, and officer changes">
+    Use **Section A** - it contains all the primary registered acts.
+  </Step>
+  
+  <Step title="For registry administrative actions">
+    Use **Section B** - it contains closures, reopenings, and administrative acts.
+  </Step>
+  
+  <Step title="For shareholder meeting notices and public announcements">
+    Use **Section C** - it contains legally required public announcements.
+  </Step>
+  
+  <Step title="For comprehensive coverage">
+    Parse **all sections** - many use cases require monitoring all three sections.
+  </Step>
+</Steps>
+
+## Working with Sections
+
+### Downloading by Section
+
+```python
+from bormeparser import download_pdfs
+from bormeparser.provincia import PROVINCIA
+from bormeparser.seccion import SECCION
+import datetime
+
+date = datetime.date(2016, 6, 1)
+path = "./bormes"
+
+# Download all Section A provinces
+download_pdfs(date, path, seccion=SECCION.A)
+
+# Download Section A for specific province
+download_pdfs(date, path, seccion=SECCION.A, provincia=PROVINCIA.MADRID)
+
+# Download all sections for specific province
+download_pdfs(date, path, provincia=PROVINCIA.MADRID)
+```
+
+### Parsing Different Sections
+
+```python
+from bormeparser import parse
+from bormeparser.seccion import SECCION
+
+# Parse Section A
+borme_a = parse("BORME-A-2016-101-29.pdf", SECCION.A)
+for anuncio in borme_a.get_anuncios():
+    print(f"Company: {anuncio.empresa}")
+    for act in anuncio.get_actos():
+        print(f"  {act[0]}: {act[1]}")
+
+# Parse Section B (same API)
+borme_b = parse("BORME-B-2016-101-29.pdf", SECCION.B)
+```
+
+<Warning>
+Section C requires different parsing logic due to its different structure. The library provides specialized parsers in `bormeparser/backends/seccion_c/`.
+</Warning>
+
+## Common Act Types by Section
+
+### Section A - Top Acts
+Most frequently appearing acts in Section A:
+
+1. **Nombramientos** (Appointments) - Nearly every day
+2. **Revocaciones** (Revocations) - Very common
+3. **Ceses/Dimisiones** (Resignations) - Very common
+4. **Constitución** (Incorporation) - Daily
+5. **Modificaciones estatutarias** (Statutory changes) - Frequent
+6. **Cambio de domicilio social** (Address changes) - Frequent
+7. **Ampliación de capital** (Capital increases) - Common
+
+### Section B - Top Acts
+Most frequently appearing acts in Section B:
+
+1. **Cierre provisional** (Provisional closure) - Most common
+2. **Reapertura hoja registral** (Registry reopening)
+3. **Reactivación de la sociedad** (Company reactivation)
+
+### Section C - Top Categories
+Most common announcement types:
+
+1. **Convocatorias de juntas** (Meeting notices) - Most common
+2. **Aumento de capital** (Capital increase announcements)
+3. **Reducción de capital** (Capital reduction announcements)
+
+See `bormeparser/acto.py:20-174` for the complete list of acts.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="File Formats" href="/concepts/file-formats" icon="file">
+    Learn about PDF, XML, and HTML formats
+  </Card>
+  <Card title="Start Parsing" href="/quickstart" icon="code">
+    Begin extracting data from BORME files
+  </Card>
+</CardGroup>

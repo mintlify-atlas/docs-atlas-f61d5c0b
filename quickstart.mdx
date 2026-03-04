@@ -1,80 +1,356 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get started with bormeparser in minutes
 ---
 
-## Get started in three steps
+## Overview
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide will walk you through the basic usage of bormeparser, from parsing BORME PDF files to extracting company data and exporting to JSON.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+Make sure you have [installed bormeparser](/installation) before following this guide.
 </Note>
+
+## Basic Workflow
+
+<Steps>
+  <Step title="Parse a BORME PDF file">
+    The main entry point is the `parse()` function. You need to specify the file path and the section type:
+    
+    ```python
+    import bormeparser
+    from bormeparser import SECCION
+    
+    # Parse a BORME PDF file (Section A)
+    borme = bormeparser.parse('BORME-A-2015-27-10.pdf', SECCION.A)
+    
+    print(borme)
+    # Output: <Borme(2015-02-09) seccion:A provincia:Málaga>
+    ```
+    
+    The `parse()` function returns a `Borme` object containing all the parsed data.
+  </Step>
+  
+  <Step title="Access basic information">
+    The `Borme` object contains metadata about the bulletin:
+    
+    ```python
+    # Access BORME metadata
+    print(f"Date: {borme.date}")
+    print(f"Section: {borme.seccion}")
+    print(f"Province: {borme.provincia}")
+    print(f"CVE: {borme.cve}")
+    print(f"Number: {borme.num}")
+    
+    # Get announcement range
+    print(f"Announcements from {borme.anuncios_rango[0]} to {borme.anuncios_rango[1]}")
+    ```
+  </Step>
+  
+  <Step title="Extract company announcements">
+    Each BORME file contains multiple announcements (anuncios), one per company:
+    
+    ```python
+    # Get all announcement IDs
+    ids = borme.get_anuncios_ids()
+    print(f"Total announcements: {len(ids)}")
+    
+    # Get all announcements
+    anuncios = borme.get_anuncios()
+    
+    # Access a specific announcement
+    anuncio = borme.get_anuncio(ids[0])
+    print(f"Company: {anuncio.empresa}")
+    print(f"Registry: {anuncio.registro}")
+    ```
+  </Step>
+  
+  <Step title="Extract acts and company data">
+    Each announcement contains one or more acts (actos) representing registry actions:
+    
+    ```python
+    # Iterate through announcements
+    for anuncio in borme.get_anuncios():
+        print(f"\nCompany: {anuncio.empresa}")
+        print(f"Registry: {anuncio.registro}")
+        
+        # Get acts for this company
+        for acto_nombre, acto_valor in anuncio.get_actos():
+            print(f"  {acto_nombre}: {acto_valor}")
+    ```
+    
+    Acts can be text-based (like company constitution) or cargo-based (appointments):
+    
+    ```python
+    from bormeparser.borme import BormeActoCargo, BormeActoTexto
+    
+    # Check act types
+    for acto in anuncio.get_borme_actos():
+        if isinstance(acto, BormeActoCargo):
+            # Cargo acts have appointments
+            print(f"Position act: {acto.name}")
+            for cargo, nombres in acto.cargos.items():
+                print(f"  {cargo}: {', '.join(nombres)}")
+        elif isinstance(acto, BormeActoTexto):
+            # Text acts have simple values
+            print(f"Text act: {acto.name} = {acto.value}")
+    ```
+  </Step>
+  
+  <Step title="Export to JSON">
+    Convert the parsed BORME data to JSON format for easy storage and processing:
+    
+    ```python
+    # Export to JSON file
+    json_path = borme.to_json('output.json', pretty=True)
+    print(f"Saved to: {json_path}")
+    
+    # The JSON file will contain:
+    # - BORME metadata (date, section, province, CVE)
+    # - All announcements with company data
+    # - All acts for each company
+    # - Registry information
+    ```
+    
+    You can also customize the export:
+    
+    ```python
+    # Export without URL (no internet required)
+    borme.to_json('output.json', include_url=False)
+    
+    # Export to specific directory
+    borme.to_json('/path/to/output/', pretty=True)
+    
+    # Compact JSON (no indentation)
+    borme.to_json('compact.json', pretty=False)
+    ```
+  </Step>
+</Steps>
+
+## Working with Provinces and Sections
+
+bormeparser provides convenient enums for provinces and sections:
+
+<CodeGroup>
+
+```python Sections
+from bormeparser import SECCION
+
+# BORME sections
+print(SECCION.A)  # 'A' - Registered acts
+print(SECCION.B)  # 'B' - Other published acts  
+print(SECCION.C)  # 'C' - Announcements
+
+# Parse different sections
+borme_a = bormeparser.parse('file-a.pdf', SECCION.A)
+borme_b = bormeparser.parse('file-b.pdf', SECCION.B)
+```
+
+```python Provinces
+from bormeparser import PROVINCIA
+
+# Access provinces
+print(PROVINCIA.MADRID)
+print(PROVINCIA.BARCELONA)
+print(PROVINCIA.MALAGA)
+
+# Province has name and code
+prov = PROVINCIA.VALENCIA
+print(f"Name: {prov.name}")
+print(f"Code: {prov.code}")  # Returns '46'
+```
+
+</CodeGroup>
+
+## Downloading BORME Files
+
+bormeparser can automatically download BORME files from the official source:
+
+<CodeGroup>
+
+```python Download by date
+import datetime
+from bormeparser import download_pdf, SECCION, PROVINCIA
+
+# Download BORME for a specific date, section, and province
+date = datetime.date(2015, 6, 1)
+downloaded = download_pdf(
+    date=date,
+    filename='BORME-A-2015-101-29.pdf',
+    seccion=SECCION.A,
+    provincia=PROVINCIA.MALAGA
+)
+
+if downloaded:
+    print("Downloaded successfully!")
+else:
+    print("File already exists")
+```
+
+```python Download and parse
+import datetime
+from bormeparser import download_pdf, SECCION, PROVINCIA
+
+# Download and immediately parse
+borme = download_pdf(
+    date=datetime.date(2015, 6, 1),
+    filename='borme.pdf',
+    seccion=SECCION.A,
+    provincia=PROVINCIA.MADRID,
+    parse=True
+)
+
+# Now you can work with the parsed data
+print(f"Parsed {len(borme.get_anuncios())} announcements")
+```
+
+```python Download XML
+import datetime
+from bormeparser import download_xml
+
+# Download the daily XML summary
+date = datetime.date(2015, 6, 1)
+download_xml(date, 'BORME-S-20150601.xml')
+```
+
+</CodeGroup>
+
+## Working with BORME XML
+
+BORME XML files contain daily summaries with metadata and download URLs:
+
+```python
+import datetime
+from bormeparser import BormeXML, SECCION, PROVINCIA
+
+# Load XML from file
+borme_xml = BormeXML.from_file('BORME-S-20150601.xml')
+
+# Or load from date (downloads automatically)
+borme_xml = BormeXML.from_date(datetime.date(2015, 6, 1))
+
+# Get information
+print(f"Date: {borme_xml.date}")
+print(f"Number: {borme_xml.nbo}")
+print(f"Is final: {borme_xml.is_final}")
+
+# Get download URLs for specific section/province
+urls = borme_xml.get_url_pdfs(seccion=SECCION.A, provincia=PROVINCIA.MADRID)
+print(urls)
+
+# Get all CVEs (document identifiers)
+cves = borme_xml.get_cves(seccion=SECCION.A)
+print(f"CVEs: {cves}")
+
+# Download BORMEs from XML
+borme_xml.download_borme(
+    path='/tmp/bormes',
+    seccion=SECCION.A,
+    provincia=PROVINCIA.VALENCIA
+)
+```
+
+## Loading from JSON
+
+You can also load previously exported JSON files:
+
+```python
+from bormeparser import Borme
+
+# Load from JSON file
+borme = Borme.from_json('BORME-A-2015-27-10.json')
+
+# Now you can work with it as usual
+print(f"Loaded BORME from {borme.date}")
+for anuncio in borme.get_anuncios():
+    print(f"Company: {anuncio.empresa}")
+```
+
+## Complete Example
+
+Here's a complete example that downloads, parses, and exports BORME data:
+
+```python
+import datetime
+import bormeparser
+from bormeparser import SECCION, PROVINCIA
+
+# Configuration
+date = datetime.date(2015, 6, 1)
+provincia = PROVINCIA.MALAGA
+seccion = SECCION.A
+
+# Step 1: Download the PDF
+filename = f'BORME-{seccion}-{date.isoformat()}-{provincia.code}.pdf'
+print(f"Downloading {filename}...")
+
+downloaded = bormeparser.download_pdf(
+    date=date,
+    filename=filename,
+    seccion=seccion,
+    provincia=provincia
+)
+
+# Step 2: Parse the PDF
+print("Parsing PDF...")
+borme = bormeparser.parse(filename, seccion)
+
+# Step 3: Extract information
+print(f"\nBORME Information:")
+print(f"  Date: {borme.date}")
+print(f"  Province: {borme.provincia}")
+print(f"  Section: {borme.seccion}")
+print(f"  CVE: {borme.cve}")
+print(f"  Total announcements: {len(borme.get_anuncios())}")
+
+# Step 4: Process announcements
+print("\nSample companies:")
+for i, anuncio in enumerate(borme.get_anuncios()[:5]):
+    print(f"\n{i+1}. {anuncio.empresa}")
+    print(f"   Registry: {anuncio.registro}")
+    print(f"   Acts: {len(anuncio.actos)}")
+    
+    # Show first act
+    if anuncio.actos:
+        first_act = anuncio.actos[0]
+        print(f"   First act: {first_act.name}")
+
+# Step 5: Export to JSON
+json_file = borme.to_json('borme_output.json', pretty=True)
+print(f"\nExported to: {json_file}")
+```
+
+## Type Signatures
+
+bormeparser provides type information for better IDE support:
+
+```python
+from typing import List, Dict, Set
+from bormeparser.borme import Borme, BormeAnuncio, BormeActo
+import datetime
+
+def process_borme(filename: str, seccion: str) -> Dict[str, any]:
+    """Parse BORME and return summary statistics."""
+    borme: Borme = bormeparser.parse(filename, seccion)
+    
+    anuncios: List[BormeAnuncio] = borme.get_anuncios()
+    
+    return {
+        'date': borme.date,
+        'total_companies': len(anuncios),
+        'province': str(borme.provincia)
+    }
+```
+
+## Next Steps
+
+Now that you know the basics, you can:
+
+- Process multiple BORME files in batch
+- Build databases of company information
+- Track changes in corporate governance over time
+- Integrate BORME data into your applications
+
+<Tip>
+For production deployments with API access and enterprise support, consider using [LibreBOR](https://librebor.me) and the [LibreBOR API](https://docs.librebor.me/).
+</Tip>

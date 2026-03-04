@@ -1,0 +1,471 @@
+---
+title: Converting to JSON
+description: Learn how to convert BORME data to JSON format for easier data manipulation and analysis
+---
+
+# Converting to JSON
+
+bormeparser can convert parsed BORME data to JSON format, making it easier to work with the data in other applications, databases, or analysis tools.
+
+## Quick Start
+
+```python
+import bormeparser
+
+# Parse and convert to JSON
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+output_path = borme.to_json()
+
+print(f'JSON created at: {output_path}')
+# Output: BORME-A-2015-123-29.json
+```
+
+## The to_json() Method
+
+The `to_json()` method converts a `Borme` object to a JSON file:
+
+### Function Signature
+
+```python
+borme.to_json(path=None, overwrite=True, pretty=True, include_url=True)
+```
+
+### Parameters
+
+- `path`: Output path (file or directory). If `None`, uses the same name as the source file
+- `overwrite`: Overwrite existing file (default: `True`)
+- `pretty`: Use indentation for readability (default: `True`)
+- `include_url`: Include the official download URL (default: `True`, requires internet)
+
+### Return Value
+
+Returns the path to the created JSON file, or `False` if the file exists and `overwrite=False`.
+
+## Basic Usage
+
+<Steps>
+  <Step title="Convert with default settings">
+    ```python
+    import bormeparser
+    
+    borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+    
+    # Creates BORME-A-2015-123-29.json in current directory
+    json_path = borme.to_json()
+    print(f'Created: {json_path}')
+    ```
+  </Step>
+  
+  <Step title="Specify output directory">
+    ```python
+    import bormeparser
+    
+    borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+    
+    # Save to specific directory (uses CVE as filename)
+    json_path = borme.to_json(path='output/')
+    print(f'Created: {json_path}')
+    # Output: output/BORME-A-2015-123-29.json
+    ```
+  </Step>
+  
+  <Step title="Specify output filename">
+    ```python
+    import bormeparser
+    
+    borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+    
+    # Save with custom filename
+    json_path = borme.to_json(path='output/malaga-2015-06-01.json')
+    print(f'Created: {json_path}')
+    ```
+  </Step>
+</Steps>
+
+## JSON Output Structure
+
+The generated JSON file contains complete BORME data in a structured format:
+
+```json
+{
+  "cve": "BORME-A-2015-123-29",
+  "date": "2015-06-01",
+  "seccion": "A",
+  "provincia": "Málaga",
+  "num": 123,
+  "from_anuncio": 1234,
+  "to_anuncio": 1380,
+  "num_anuncios": 147,
+  "url": "https://boe.es/borme/dias/2015/06/01/pdfs/BORME-A-2015-123-29.pdf",
+  "version": "2001",
+  "raw_version": "1",
+  "anuncios": {
+    "1234": {
+      "empresa": "EXAMPLE COMPANY SL",
+      "registro": "MÁLAGA",
+      "sucursal": false,
+      "liquidacion": false,
+      "datos registrales": "T 1234 F 567 S 8 H MA 12345 I/A 1",
+      "num_actos": 3,
+      "actos": [
+        {
+          "Constitución": "2015-05-15"
+        },
+        {
+          "Objeto social": "Servicios de consultoría empresarial"
+        },
+        {
+          "Nombramientos": {
+            "Administrador único": [
+              "DOE SMITH JOHN"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Top-Level Fields
+
+- `cve`: CVE identifier (document ID)
+- `date`: Publication date (ISO format)
+- `seccion`: Section (A, B, or C)
+- `provincia`: Province name
+- `num`: BORME number for this date
+- `from_anuncio`: First announcement ID
+- `to_anuncio`: Last announcement ID
+- `num_anuncios`: Total number of announcements
+- `url`: Official download URL
+- `version`: File format version
+- `raw_version`: Raw parser version
+
+### Announcement Fields
+
+- `empresa`: Company name
+- `registro`: Commercial registry
+- `sucursal`: Branch office indicator (boolean)
+- `liquidacion`: Liquidation status (boolean)
+- `datos registrales`: Registry data string
+- `num_actos`: Number of commercial acts
+- `actos`: Array of commercial acts
+
+## Pretty vs Compact JSON
+
+### Pretty Printing (Default)
+
+Easy to read, larger file size:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+borme.to_json(pretty=True)  # Default
+```
+
+Output:
+```json
+{
+  "cve": "BORME-A-2015-123-29",
+  "date": "2015-06-01",
+  "anuncios": {
+    "1234": {
+      "empresa": "EXAMPLE COMPANY SL"
+    }
+  }
+}
+```
+
+### Compact Printing
+
+Minified, smaller file size:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+borme.to_json(pretty=False)
+```
+
+Output:
+```json
+{"cve":"BORME-A-2015-123-29","date":"2015-06-01","anuncios":{"1234":{"empresa":"EXAMPLE COMPANY SL"}}}
+```
+
+## Including or Excluding URLs
+
+Control whether to include the official download URL:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Include URL (requires internet connection)
+borme.to_json(include_url=True)  # Default
+
+# Exclude URL (works offline)
+borme.to_json(include_url=False)
+```
+
+<Note>
+  Setting `include_url=True` requires an internet connection to fetch the BORME number from the XML file.
+</Note>
+
+## Handling Existing Files
+
+Control behavior when the output file already exists:
+
+```python
+import bormeparser
+import os
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Overwrite existing file (default)
+path = borme.to_json(overwrite=True)
+print(f'Created: {path}')
+
+# Don't overwrite existing file
+path = borme.to_json(overwrite=False)
+if not path:
+    print('File already exists, not overwriting')
+```
+
+## Complete Example: borme_to_json.py
+
+Here's the complete script from `scripts/borme_to_json.py`:
+
+```python
+import bormeparser
+import bormeparser.backends.pypdf2.parser
+from bormeparser.backends.defaults import OPTIONS
+
+# Enable company name sanitization
+OPTIONS['SANITIZE_COMPANY_NAME'] = True
+
+import argparse
+import logging
+import os
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Convert BORME A PDF files to JSON.'
+    )
+    parser.add_argument('filename', help='BORME A PDF filename')
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        default=False,
+        help='Debug mode'
+    )
+    parser.add_argument(
+        '-o', '--output',
+        help='Output directory or filename (default is current directory)'
+    )
+    args = parser.parse_args()
+    
+    # Enable debug logging
+    if args.debug:
+        bormeparser.borme.logger.setLevel(logging.DEBUG)
+        bormeparser.backends.pypdf2.parser.logger.setLevel(logging.DEBUG)
+    
+    print(f'\nParsing {args.filename}')
+    borme = bormeparser.parse(args.filename, bormeparser.SECCION.A)
+    path = borme.to_json(args.output)
+    
+    if path:
+        print(f'Created {os.path.abspath(path)}')
+    else:
+        print(f'Error creating JSON for {args.filename}')
+```
+
+## Batch Processing Multiple Files
+
+Convert multiple BORME files to JSON:
+
+```python
+import bormeparser
+import os
+import glob
+
+def batch_convert_to_json(input_dir, output_dir):
+    """Convert all PDF files in a directory to JSON"""
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Find all BORME PDF files
+    pdf_files = glob.glob(os.path.join(input_dir, 'BORME-A-*.pdf'))
+    
+    print(f'Found {len(pdf_files)} PDF files')
+    
+    success_count = 0
+    error_count = 0
+    
+    for pdf_file in pdf_files:
+        try:
+            print(f'Processing {os.path.basename(pdf_file)}...')
+            
+            # Parse the PDF
+            borme = bormeparser.parse(pdf_file, 'A')
+            
+            # Convert to JSON
+            json_path = borme.to_json(
+                path=output_dir,
+                pretty=True,
+                include_url=False  # Skip URL for faster processing
+            )
+            
+            if json_path:
+                print(f'  Created {os.path.basename(json_path)}')
+                success_count += 1
+            else:
+                print(f'  Skipped (already exists)')
+                
+        except Exception as e:
+            print(f'  Error: {e}')
+            error_count += 1
+    
+    print(f'\nCompleted: {success_count} successful, {error_count} errors')
+
+# Usage
+batch_convert_to_json('downloads/pdfs/', 'downloads/json/')
+```
+
+## Loading JSON Back to Borme Object
+
+You can load a JSON file back into a `Borme` object:
+
+```python
+import bormeparser
+from bormeparser.borme import Borme
+
+# Load from JSON file
+borme = Borme.from_json('BORME-A-2015-123-29.json')
+
+# Access data as normal
+print(f'Date: {borme.date}')
+print(f'Province: {borme.provincia}')
+print(f'Announcements: {len(borme.get_anuncios())}')
+
+# Iterate over companies
+for anuncio in borme.get_anuncios():
+    print(f'{anuncio.id}: {anuncio.empresa}')
+```
+
+### Loading from File Object
+
+```python
+import bormeparser
+from bormeparser.borme import Borme
+
+# Load from file object
+with open('BORME-A-2015-123-29.json', 'r') as f:
+    borme = Borme.from_json(f)
+    print(f'Loaded {len(borme.get_anuncios())} announcements')
+```
+
+## Working with JSON Data
+
+Once you have JSON files, you can process them with standard tools:
+
+### Using Python's json module
+
+```python
+import json
+
+# Read JSON data
+with open('BORME-A-2015-123-29.json', 'r') as f:
+    data = json.load(f)
+
+print(f"Province: {data['provincia']}")
+print(f"Date: {data['date']}")
+print(f"Total announcements: {data['num_anuncios']}")
+
+# Find companies by name
+for anuncio_id, anuncio in data['anuncios'].items():
+    if 'TECHNOLOGY' in anuncio['empresa']:
+        print(f"{anuncio_id}: {anuncio['empresa']}")
+```
+
+### Using jq command line
+
+```bash
+# Get total number of announcements
+jq '.num_anuncios' BORME-A-2015-123-29.json
+
+# Extract all company names
+jq '.anuncios | to_entries | .[].value.empresa' BORME-A-2015-123-29.json
+
+# Find announcements with "Constitución"
+jq '.anuncios | to_entries | .[] | select(.value.actos | .[] | has("Constitución"))' BORME-A-2015-123-29.json
+```
+
+## JSON File Naming
+
+The output filename depends on the `path` parameter:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# No path: uses source filename with .json extension
+borme.to_json()  # -> BORME-A-2015-123-29.json
+
+# Directory path: uses CVE as filename
+borme.to_json('output/')  # -> output/BORME-A-2015-123-29.json
+
+# File path: uses specified filename
+borme.to_json('output/malaga.json')  # -> output/malaga.json
+```
+
+## Error Handling
+
+```python
+import bormeparser
+import os
+
+def safe_convert_to_json(pdf_file, output_dir):
+    """Convert PDF to JSON with error handling"""
+    try:
+        # Check if PDF exists
+        if not os.path.isfile(pdf_file):
+            print(f'Error: File not found - {pdf_file}')
+            return False
+        
+        # Parse the file
+        borme = bormeparser.parse(pdf_file, 'A')
+        
+        # Convert to JSON
+        json_path = borme.to_json(
+            path=output_dir,
+            overwrite=False,
+            include_url=False
+        )
+        
+        if json_path:
+            print(f'Success: {json_path}')
+            return True
+        else:
+            print(f'Skipped: File already exists')
+            return False
+            
+    except Exception as e:
+        print(f'Error converting {pdf_file}: {e}')
+        return False
+
+# Usage
+safe_convert_to_json('BORME-A-2015-123-29.pdf', 'output/')
+```
+
+## Next Steps
+
+With JSON files, you can:
+
+- Import data into databases (MongoDB, PostgreSQL, etc.)
+- Analyze trends using data science tools (pandas, numpy)
+- Build web applications with the data
+- Create data visualizations
+- Integrate with business intelligence tools

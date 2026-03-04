@@ -1,0 +1,222 @@
+---
+title: 'Utility Functions'
+description: 'Helper functions for working with BORME files and data'
+---
+
+## Overview
+
+The `bormeparser.utils` module provides utility functions for generating file paths, URLs, and transforming strings when working with BORME data.
+
+---
+
+## get_borme_xml_filepath
+
+Generates the file path for a BORME XML file based on a date.
+
+```python
+get_borme_xml_filepath(date, directory=CONFIG["borme_root"])
+```
+
+<ParamField path="date" type="datetime.date" required>
+  The date for which to generate the XML file path
+</ParamField>
+
+<ParamField path="directory" type="str" default="CONFIG['borme_root']">
+  The root directory where BORME files are stored
+</ParamField>
+
+<ResponseField name="return" type="str">
+  The full file path to the BORME XML file
+</ResponseField>
+
+### Example
+
+```python
+import datetime
+from bormeparser.utils import get_borme_xml_filepath
+
+date = datetime.date(2024, 3, 15)
+xml_path = get_borme_xml_filepath(date)
+print(xml_path)
+# Output: /path/to/borme_root/xml/2024/03/BORME-S-20240315.xml
+```
+
+---
+
+## get_borme_pdf_path
+
+Generates the directory path where BORME PDF files for a specific date are stored.
+
+```python
+get_borme_pdf_path(date, directory=CONFIG["borme_root"])
+```
+
+<ParamField path="date" type="datetime.date" required>
+  The date for which to generate the PDF directory path
+</ParamField>
+
+<ParamField path="directory" type="str" default="CONFIG['borme_root']">
+  The root directory where BORME files are stored
+</ParamField>
+
+<ResponseField name="return" type="str">
+  The directory path where PDF files for the given date are stored
+</ResponseField>
+
+### Example
+
+```python
+import datetime
+from bormeparser.utils import get_borme_pdf_path
+
+date = datetime.date(2024, 3, 15)
+pdf_path = get_borme_pdf_path(date)
+print(pdf_path)
+# Output: /path/to/borme_root/pdf/2024/03/15
+```
+
+---
+
+## get_borme_website
+
+Generates the URL for the BORME website for a specific date and section.
+
+```python
+get_borme_website(date, seccion, secure=True)
+```
+
+<ParamField path="date" type="datetime.date" required>
+  The date for which to generate the website URL
+</ParamField>
+
+<ParamField path="seccion" type="str" required>
+  The BORME section (e.g., 'A' for Section A, 'B' for Section B)
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Whether to use HTTPS (True) or HTTP (False) protocol
+</ParamField>
+
+<ResponseField name="return" type="str">
+  The full URL to the BORME website for the specified date and section
+</ResponseField>
+
+### Example
+
+```python
+import datetime
+from bormeparser.utils import get_borme_website
+
+date = datetime.date(2024, 3, 15)
+url = get_borme_website(date, 'A')
+print(url)
+# Output: https://www.boe.es/borme/dias/2024/03/15/index.php?s=A
+
+# Using HTTP instead of HTTPS
+url_http = get_borme_website(date, 'B', secure=False)
+print(url_http)
+# Output: http://www.boe.es/borme/dias/2024/03/15/index.php?s=B
+```
+
+---
+
+## remove_accents
+
+Removes accents and diacritical marks from a string.
+
+```python
+remove_accents(string)
+```
+
+<ParamField path="string" type="str" required>
+  The string from which to remove accents
+</ParamField>
+
+<ResponseField name="return" type="str">
+  The string with all accents and diacritical marks removed
+</ResponseField>
+
+### Example
+
+```python
+from bormeparser.utils import remove_accents
+
+text = "José García Fernández"
+clean_text = remove_accents(text)
+print(clean_text)
+# Output: Jose Garcia Fernandez
+
+text = "Sociedad Anónima"
+clean_text = remove_accents(text)
+print(clean_text)
+# Output: Sociedad Anonima
+```
+
+---
+
+## acto_to_attr
+
+Converts a BORME acto (action/event) name to a valid Python attribute name.
+
+This function removes accents, common Spanish words ("del", "por", "de"), converts spaces and special characters to underscores, converts to lowercase, and removes any non-alphabetic characters except underscores.
+
+```python
+acto_to_attr(acto)
+```
+
+<ParamField path="acto" type="str" required>
+  The acto name to convert
+</ParamField>
+
+<ResponseField name="return" type="str">
+  A valid Python attribute name derived from the acto
+</ResponseField>
+
+### Example
+
+```python
+from bormeparser.utils import acto_to_attr
+
+acto = "Nombramientos del consejo"
+attr_name = acto_to_attr(acto)
+print(attr_name)
+# Output: nombramientos_consejo
+
+acto = "Constitución de sociedad"
+attr_name = acto_to_attr(acto)
+print(attr_name)
+# Output: constitucion_sociedad
+
+acto = "Cese/Dimisión"
+attr_name = acto_to_attr(acto)
+print(attr_name)
+# Output: cese_dimision
+```
+
+---
+
+## Constants
+
+### FIRST_BORME
+
+A dictionary mapping years to the date of the first BORME publication for that year.
+
+```python
+FIRST_BORME = {
+    2009: datetime.date(2009, 1, 2),
+    2010: datetime.date(2010, 1, 4),
+    2011: datetime.date(2011, 1, 3),
+    2012: datetime.date(2012, 1, 2),
+    2013: datetime.date(2013, 1, 2),
+    2014: datetime.date(2014, 1, 2),
+    2015: datetime.date(2015, 1, 2)
+}
+```
+
+### BORME_WEB_URL
+
+Template string for constructing BORME website URLs.
+
+```python
+BORME_WEB_URL = "{protocol}://www.boe.es/borme/dias/{year}/{month:02d}/{day:02d}/index.php?s={seccion}"
+```

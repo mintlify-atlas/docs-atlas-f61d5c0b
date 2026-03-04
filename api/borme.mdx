@@ -1,0 +1,551 @@
+---
+title: "Borme and BormeXML"
+description: "Core classes for working with BORME documents"
+---
+
+## Borme
+
+The `Borme` class represents a parsed BORME (Boletín Oficial del Registro Mercantil) document containing commercial registry announcements.
+
+### Constructor
+
+```python
+Borme(date, seccion, provincia, num, cve, anuncios=None, filename=None, lazy=True)
+```
+
+<ParamField path="date" type="datetime.date | tuple" required>
+  The publication date. Can be a `datetime.date` object or a tuple `(year, month, day)`.
+</ParamField>
+
+<ParamField path="seccion" type="str" required>
+  The BORME section (e.g., 'A' for acts, 'C' for announcements).
+</ParamField>
+
+<ParamField path="provincia" type="str | Provincia" required>
+  The province name or `Provincia` object.
+</ParamField>
+
+<ParamField path="num" type="int" required>
+  The BORME bulletin number.
+</ParamField>
+
+<ParamField path="cve" type="str" required>
+  The CVE (verification code) identifier.
+</ParamField>
+
+<ParamField path="anuncios" type="list[BormeAnuncio]" default="None">
+  List of announcements contained in the BORME.
+</ParamField>
+
+<ParamField path="filename" type="str" default="None">
+  Path to the source PDF file if loaded from disk.
+</ParamField>
+
+<ParamField path="lazy" type="bool" default="True">
+  If `False`, sets the URL immediately. Otherwise, URL is computed on demand.
+</ParamField>
+
+### Properties
+
+<ResponseField name="date" type="datetime.date">
+  The publication date of this BORME.
+</ResponseField>
+
+<ResponseField name="seccion" type="str">
+  The BORME section identifier.
+</ResponseField>
+
+<ResponseField name="provincia" type="str | Provincia">
+  The province for this BORME.
+</ResponseField>
+
+<ResponseField name="num" type="int">
+  The bulletin number.
+</ResponseField>
+
+<ResponseField name="cve" type="str">
+  The CVE verification code.
+</ResponseField>
+
+<ResponseField name="filename" type="str">
+  Path to the source file if available.
+</ResponseField>
+
+<ResponseField name="url" type="str">
+  Download URL for the BORME PDF. Computed lazily on first access.
+</ResponseField>
+
+<ResponseField name="anuncios" type="dict[int, BormeAnuncio]">
+  Dictionary mapping announcement IDs to `BormeAnuncio` objects.
+</ResponseField>
+
+<ResponseField name="anuncios_rango" type="tuple[int, int]">
+  Tuple with the minimum and maximum announcement IDs (from_anuncio, to_anuncio).
+</ResponseField>
+
+### Methods
+
+#### get_anuncio()
+
+```python
+def get_anuncio(self, anuncio_id: int) -> BormeAnuncio
+```
+
+Retrieves a specific announcement by its ID.
+
+<ParamField path="anuncio_id" type="int" required>
+  The announcement ID number.
+</ParamField>
+
+<ResponseField name="return" type="BormeAnuncio">
+  The announcement with the specified ID.
+</ResponseField>
+
+**Raises:** `BormeAnuncioNotFound` if the announcement ID doesn't exist.
+
+#### get_anuncios_ids()
+
+```python
+def get_anuncios_ids(self) -> list[int]
+```
+
+Returns a sorted list of all announcement IDs.
+
+<ResponseField name="return" type="list[int]">
+  Sorted list of announcement IDs.
+</ResponseField>
+
+#### get_anuncios()
+
+```python
+def get_anuncios(self) -> list[BormeAnuncio]
+```
+
+Returns all announcements as a list.
+
+<ResponseField name="return" type="list[BormeAnuncio]">
+  List of all `BormeAnuncio` objects.
+</ResponseField>
+
+#### download()
+
+```python
+def download(self, filename: str) -> bool
+```
+
+Downloads the BORME PDF to the specified file path.
+
+<ParamField path="filename" type="str" required>
+  Path where the PDF should be saved.
+</ParamField>
+
+<ResponseField name="return" type="bool">
+  `True` if download succeeded.
+</ResponseField>
+
+**Raises:** `BormeAlreadyDownloadedException` if the BORME is already associated with a file.
+
+#### to_json()
+
+```python
+def to_json(self, path=None, overwrite=True, pretty=True, include_url=True) -> str | bool
+```
+
+Exports the BORME to JSON format.
+
+<ParamField path="path" type="str" default="None">
+  Output path. Can be a directory or file. If `None`, uses the filename with `.json` extension.
+</ParamField>
+
+<ParamField path="overwrite" type="bool" default="True">
+  Whether to overwrite existing files.
+</ParamField>
+
+<ParamField path="pretty" type="bool" default="True">
+  Whether to format JSON with indentation for readability.
+</ParamField>
+
+<ParamField path="include_url" type="bool" default="True">
+  Whether to include the download URL. Requires internet connection.
+</ParamField>
+
+<ResponseField name="return" type="str | bool">
+  Path to the created JSON file, or `False` if file exists and `overwrite=False`.
+</ResponseField>
+
+<Note>
+  When `include_url=True`, this method requires an internet connection to fetch the BORME URL.
+</Note>
+
+#### from_json()
+
+```python
+@classmethod
+def from_json(cls, filename: str | io.IOBase) -> Borme
+```
+
+Creates a `Borme` instance from a BORME-JSON file.
+
+<ParamField path="filename" type="str | io.IOBase" required>
+  Path to a JSON file or an open file object.
+</ParamField>
+
+<ResponseField name="return" type="Borme">
+  A new `Borme` instance populated from the JSON data.
+</ResponseField>
+
+<Warning>
+  If the JSON was created with an older version of bormeparser, a warning is logged.
+</Warning>
+
+### Usage Examples
+
+#### Basic usage
+
+```python
+from bormeparser import parse
+from bormeparser import SECCION
+
+# Parse a BORME PDF
+borme = parse('BORME-A-2015-102-29.pdf', SECCION.A)
+
+# Access properties
+print(f"Date: {borme.date}")
+print(f"Province: {borme.provincia}")
+print(f"CVE: {borme.cve}")
+print(f"Number of announcements: {len(borme.anuncios)}")
+
+# Get announcement IDs
+ids = borme.get_anuncios_ids()
+print(f"Announcement IDs: {ids[0]} to {ids[-1]}")
+```
+
+#### Working with announcements
+
+```python
+# Get specific announcement
+anuncio = borme.get_anuncio(12345)
+print(f"Company: {anuncio.empresa}")
+
+# Iterate over all announcements
+for anuncio in borme.get_anuncios():
+    print(f"{anuncio.id}: {anuncio.empresa}")
+    for acto_name, acto_value in anuncio.get_actos():
+        print(f"  {acto_name}: {acto_value}")
+```
+
+#### Export to JSON
+
+```python
+# Export with all options
+json_path = borme.to_json(
+    path="/tmp/borme_output",
+    overwrite=True,
+    pretty=True,
+    include_url=True
+)
+print(f"Saved to: {json_path}")
+
+# Load from JSON
+borme_loaded = Borme.from_json(json_path)
+```
+
+---
+
+## BormeXML
+
+The `BormeXML` class handles the daily BORME summary XML files that list all available BORME PDFs.
+
+### Constructor
+
+```python
+BormeXML()
+```
+
+Creates an empty `BormeXML` instance. Use the static factory methods `from_file()` or `from_date()` to load data.
+
+### Properties
+
+<ResponseField name="date" type="datetime.date">
+  The publication date of this BORME XML.
+</ResponseField>
+
+<ResponseField name="nbo" type="int">
+  Número de Boletín Oficial (official bulletin number).
+</ResponseField>
+
+<ResponseField name="filename" type="str">
+  Path to the XML file if loaded from disk.
+</ResponseField>
+
+<ResponseField name="url" type="str">
+  URL of the BORME XML file.
+</ResponseField>
+
+<ResponseField name="prev_borme" type="datetime.date">
+  Date of the previous BORME publication.
+</ResponseField>
+
+<ResponseField name="next_borme" type="datetime.date | None">
+  Date of the next BORME publication, or `None` if this is not final.
+</ResponseField>
+
+<ResponseField name="is_final" type="bool">
+  Whether this is the final (definitive) version of the XML.
+</ResponseField>
+
+### Factory Methods
+
+#### from_file()
+
+```python
+@staticmethod
+def from_file(path: str, secure=True) -> BormeXML
+```
+
+Loads a BORME XML from a local file or URL.
+
+<ParamField path="path" type="str" required>
+  File path or HTTP(S) URL to the XML file.
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Whether to use HTTPS for URLs.
+</ParamField>
+
+<ResponseField name="return" type="BormeXML">
+  Loaded `BormeXML` instance.
+</ResponseField>
+
+**Raises:** `IOError` if file doesn't exist, `BormeDoesntExistException` if not a valid BORME XML.
+
+#### from_date()
+
+```python
+@staticmethod
+def from_date(date: datetime.date | tuple, secure=True) -> BormeXML
+```
+
+Fetches the BORME XML for a specific date from the official source.
+
+<ParamField path="date" type="datetime.date | tuple" required>
+  Date as a `datetime.date` object or tuple `(year, month, day)`.
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Whether to use HTTPS.
+</ParamField>
+
+<ResponseField name="return" type="BormeXML">
+  Loaded `BormeXML` instance for the specified date.
+</ResponseField>
+
+### Methods
+
+#### get_url_pdfs()
+
+```python
+def get_url_pdfs(self, seccion=None, provincia=None) -> dict[str, str]
+```
+
+Retrieves download URLs for BORME PDFs.
+
+<ParamField path="seccion" type="str">
+  Filter by section (e.g., 'A', 'B', 'C'). For section C, provincia is ignored.
+</ParamField>
+
+<ParamField path="provincia" type="str">
+  Filter by province name.
+</ParamField>
+
+<ResponseField name="return" type="dict">
+  Dictionary mapping CVE/province to PDF URLs. Structure depends on parameters:
+  - Both specified: `{cve: url}`
+  - Only seccion: `{provincia: url}`
+  - Only provincia: `{seccion: url}`
+</ResponseField>
+
+<Note>
+  You must specify at least one of `seccion` or `provincia`.
+</Note>
+
+#### get_cves()
+
+```python
+def get_cves(self, seccion=None, provincia=None) -> list[str] | str
+```
+
+Retrieves CVE identifiers for BORME documents.
+
+<ParamField path="seccion" type="str">
+  Filter by section.
+</ParamField>
+
+<ParamField path="provincia" type="str">
+  Filter by province.
+</ParamField>
+
+<ResponseField name="return" type="list[str] | str">
+  List of CVE codes, or single CVE string if only one result.
+</ResponseField>
+
+#### get_sizes()
+
+```python
+def get_sizes(self, seccion=None, provincia=None) -> dict[str, int]
+```
+
+Retrieves file sizes for BORME PDFs.
+
+<ParamField path="seccion" type="str">
+  Filter by section.
+</ParamField>
+
+<ParamField path="provincia" type="str">
+  Filter by province.
+</ParamField>
+
+<ResponseField name="return" type="dict[str, int]">
+  Dictionary mapping CVE to file size in bytes.
+</ResponseField>
+
+#### get_url_cve()
+
+```python
+def get_url_cve(self, cve: str) -> str
+```
+
+Gets the download URL for a specific CVE.
+
+<ParamField path="cve" type="str" required>
+  The CVE identifier.
+</ParamField>
+
+<ResponseField name="return" type="str">
+  Download URL for the BORME PDF.
+</ResponseField>
+
+**Raises:** `AttributeError` if CVE is not found.
+
+#### get_provincias()
+
+```python
+def get_provincias(self, seccion: str) -> list[str]
+```
+
+Lists all provinces with BORMEs in a specific section.
+
+<ParamField path="seccion" type="str" required>
+  The section identifier.
+</ParamField>
+
+<ResponseField name="return" type="list[str]">
+  List of province names.
+</ResponseField>
+
+#### download_borme()
+
+```python
+def download_borme(self, path: str, provincia=None, seccion=None) -> tuple[bool, list]
+```
+
+Downloads BORME PDFs to the specified directory.
+
+<ParamField path="path" type="str" required>
+  Directory where files should be saved.
+</ParamField>
+
+<ParamField path="provincia" type="str">
+  Province to download.
+</ParamField>
+
+<ParamField path="seccion" type="str">
+  Section to download.
+</ParamField>
+
+<ResponseField name="return" type="tuple[bool, list]">
+  Tuple of `(success, list_of_downloaded_files)`.
+</ResponseField>
+
+#### save_to_file()
+
+```python
+def save_to_file(self, path: str) -> bool
+```
+
+Saves the XML to disk.
+
+<ParamField path="path" type="str" required>
+  Output file path. Parent directories are created if needed.
+</ParamField>
+
+<ResponseField name="return" type="bool">
+  `True` on success.
+</ResponseField>
+
+### Usage Examples
+
+#### Load from date
+
+```python
+from bormeparser.borme import BormeXML
+import datetime
+
+# Fetch BORME XML for a specific date
+date = datetime.date(2015, 6, 2)
+borme_xml = BormeXML.from_date(date)
+
+print(f"Date: {borme_xml.date}")
+print(f"Bulletin number: {borme_xml.nbo}")
+print(f"Is final: {borme_xml.is_final}")
+```
+
+#### Get available PDFs
+
+```python
+from bormeparser import SECCION, PROVINCIA
+
+# Get all PDFs for section A
+urls = borme_xml.get_url_pdfs(seccion=SECCION.A)
+for provincia, url in urls.items():
+    print(f"{provincia}: {url}")
+
+# Get PDF for specific province and section
+urls = borme_xml.get_url_pdfs(seccion=SECCION.A, provincia=PROVINCIA.MALAGA)
+# Returns: {'BORME-A-2015-102-29': 'http://...'}
+
+# Get CVEs and sizes
+cves = borme_xml.get_cves(seccion=SECCION.A)
+sizes = borme_xml.get_sizes(seccion=SECCION.A)
+
+for cve in cves:
+    print(f"{cve}: {sizes[cve]} bytes")
+```
+
+#### Download BORMEs
+
+```python
+# Download all BORMEs for a province
+success, files = borme_xml.download_borme(
+    path="/tmp/borme",
+    provincia="MÁLAGA",
+    seccion=SECCION.A
+)
+
+print(f"Downloaded {len(files)} files")
+
+# Save the XML itself
+borme_xml.save_to_file("/tmp/borme/summary.xml")
+```
+
+#### Load from local file
+
+```python
+# Load from local file
+borme_xml = BormeXML.from_file("/path/to/BORME-S-20150602.xml")
+
+# Or from URL
+borme_xml = BormeXML.from_file(
+    "http://www.boe.es/diario_borme/xml.php?id=BORME-S-20150602"
+)
+```

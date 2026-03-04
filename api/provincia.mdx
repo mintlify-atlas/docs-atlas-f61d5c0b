@@ -1,0 +1,533 @@
+---
+title: PROVINCIA Enum
+description: Spanish provinces and autonomous cities
+---
+
+The `PROVINCIA` class contains constants representing all 52 Spanish provinces and autonomous cities, along with a `Provincia` class for working with province data.
+
+## Overview
+
+PROVINCIA provides constants for all provinces in Spain, including the autonomous cities of Ceuta and Melilla. Each province has a name and a two-digit code used in official Spanish registries.
+
+## Provincia Class
+
+The `Provincia` class represents a single Spanish province.
+
+### Constructor
+
+```python
+Provincia(name, code)
+```
+
+<ParamField path="name" type="str" required>
+  Province name (e.g., "Madrid", "Barcelona")
+</ParamField>
+
+<ParamField path="code" type="int" required>
+  Province code (1-52)
+</ParamField>
+
+### Properties
+
+<ParamField path="name" type="str">
+  Province name
+</ParamField>
+
+<ParamField path="code" type="str">
+  Two-digit province code (e.g., "01", "28", "52")
+</ParamField>
+
+### Methods
+
+```python
+# String representation
+str(provincia)  # Returns province name
+
+# Comparison
+provincia1 == provincia2  # Compare by name and code
+provincia == "Madrid"  # Compare with string (case-insensitive)
+provincia1 < provincia2  # Compare alphabetically by name
+```
+
+## Province Constants
+
+### Northern Spain
+
+<ParamField path="ALAVA" type="Provincia">
+  Álava (code: 01) - Also accessible as `ARABA`
+</ParamField>
+
+<ParamField path="ASTURIAS" type="Provincia">
+  Asturias (code: 33)
+</ParamField>
+
+<ParamField path="CANTABRIA" type="Provincia">
+  Cantabria (code: 39)
+</ParamField>
+
+<ParamField path="GUIPUZCOA" type="Provincia">
+  Guipúzcoa (code: 20) - Also accessible as `GIPUZKOA`
+</ParamField>
+
+<ParamField path="LA_RIOJA" type="Provincia">
+  La Rioja (code: 26)
+</ParamField>
+
+<ParamField path="NAVARRA" type="Provincia">
+  Navarra (code: 31)
+</ParamField>
+
+<ParamField path="VIZCAYA" type="Provincia">
+  Vizcaya (code: 48) - Also accessible as `BIZKAIA`
+</ParamField>
+
+### Galicia
+
+<ParamField path="LA_CORUNA" type="Provincia">
+  La Coruña (code: 15) - Also accessible as `A_CORUNA`
+</ParamField>
+
+<ParamField path="LUGO" type="Provincia">
+  Lugo (code: 27)
+</ParamField>
+
+<ParamField path="ORENSE" type="Provincia">
+  Orense (code: 32) - Also accessible as `OURENSE`
+</ParamField>
+
+<ParamField path="PONTEVEDRA" type="Provincia">
+  Pontevedra (code: 36)
+</ParamField>
+
+### Catalonia
+
+<ParamField path="BARCELONA" type="Provincia">
+  Barcelona (code: 08)
+</ParamField>
+
+<ParamField path="GERONA" type="Provincia">
+  Gerona (code: 17) - Also accessible as `GIRONA`
+</ParamField>
+
+<ParamField path="LERIDA" type="Provincia">
+  Lérida (code: 25) - Also accessible as `LLEIDA`
+</ParamField>
+
+<ParamField path="TARRAGONA" type="Provincia">
+  Tarragona (code: 43)
+</ParamField>
+
+### Aragon
+
+<ParamField path="HUESCA" type="Provincia">
+  Huesca (code: 22)
+</ParamField>
+
+<ParamField path="TERUEL" type="Provincia">
+  Teruel (code: 44)
+</ParamField>
+
+<ParamField path="ZARAGOZA" type="Provincia">
+  Zaragoza (code: 50)
+</ParamField>
+
+### Valencian Community
+
+<ParamField path="ALICANTE" type="Provincia">
+  Alicante (code: 03)
+</ParamField>
+
+<ParamField path="CASTELLON" type="Provincia">
+  Castellón (code: 12)
+</ParamField>
+
+<ParamField path="VALENCIA" type="Provincia">
+  Valencia (code: 46)
+</ParamField>
+
+### Castile and León
+
+<ParamField path="AVILA" type="Provincia">
+  Ávila (code: 05)
+</ParamField>
+
+<ParamField path="BURGOS" type="Provincia">
+  Burgos (code: 09)
+</ParamField>
+
+<ParamField path="LEON" type="Provincia">
+  León (code: 24)
+</ParamField>
+
+<ParamField path="PALENCIA" type="Provincia">
+  Palencia (code: 34)
+</ParamField>
+
+<ParamField path="SALAMANCA" type="Provincia">
+  Salamanca (code: 37)
+</ParamField>
+
+<ParamField path="SEGOVIA" type="Provincia">
+  Segovia (code: 40)
+</ParamField>
+
+<ParamField path="SORIA" type="Provincia">
+  Soria (code: 42)
+</ParamField>
+
+<ParamField path="VALLADOLID" type="Provincia">
+  Valladolid (code: 47)
+</ParamField>
+
+<ParamField path="ZAMORA" type="Provincia">
+  Zamora (code: 49)
+</ParamField>
+
+### Castile-La Mancha
+
+<ParamField path="ALBACETE" type="Provincia">
+  Albacete (code: 02)
+</ParamField>
+
+<ParamField path="CIUDAD_REAL" type="Provincia">
+  Ciudad Real (code: 13)
+</ParamField>
+
+<ParamField path="CUENCA" type="Provincia">
+  Cuenca (code: 16)
+</ParamField>
+
+<ParamField path="GUADALAJARA" type="Provincia">
+  Guadalajara (code: 19)
+</ParamField>
+
+<ParamField path="TOLEDO" type="Provincia">
+  Toledo (code: 45)
+</ParamField>
+
+### Madrid
+
+<ParamField path="MADRID" type="Provincia">
+  Madrid (code: 28)
+</ParamField>
+
+### Extremadura
+
+<ParamField path="BADAJOZ" type="Provincia">
+  Badajoz (code: 06)
+</ParamField>
+
+<ParamField path="CACERES" type="Provincia">
+  Cáceres (code: 10)
+</ParamField>
+
+### Andalusia
+
+<ParamField path="ALMERIA" type="Provincia">
+  Almería (code: 04)
+</ParamField>
+
+<ParamField path="CADIZ" type="Provincia">
+  Cádiz (code: 11)
+</ParamField>
+
+<ParamField path="CORDOBA" type="Provincia">
+  Córdoba (code: 14)
+</ParamField>
+
+<ParamField path="GRANADA" type="Provincia">
+  Granada (code: 18)
+</ParamField>
+
+<ParamField path="HUELVA" type="Provincia">
+  Huelva (code: 21)
+</ParamField>
+
+<ParamField path="JAEN" type="Provincia">
+  Jaén (code: 23)
+</ParamField>
+
+<ParamField path="MALAGA" type="Provincia">
+  Málaga (code: 29)
+</ParamField>
+
+<ParamField path="SEVILLA" type="Provincia">
+  Sevilla (code: 41)
+</ParamField>
+
+### Murcia
+
+<ParamField path="MURCIA" type="Provincia">
+  Murcia (code: 30)
+</ParamField>
+
+### Balearic Islands
+
+<ParamField path="ISLAS_BALEARES" type="Provincia">
+  Islas Baleares (code: 07) - Also accessible as `ILLES_BALEARS`
+</ParamField>
+
+### Canary Islands
+
+<ParamField path="LAS_PALMAS" type="Provincia">
+  Las Palmas (code: 35)
+</ParamField>
+
+<ParamField path="SANTA_CRUZ_DE_TENERIFE" type="Provincia">
+  Santa Cruz de Tenerife (code: 38)
+</ParamField>
+
+### Autonomous Cities
+
+<ParamField path="CEUTA" type="Provincia">
+  Ceuta (code: 51)
+</ParamField>
+
+<ParamField path="MELILLA" type="Provincia">
+  Melilla (code: 52)
+</ParamField>
+
+## Static Methods
+
+### from_title()
+
+Convert a province title/name to a PROVINCIA constant.
+
+```python
+PROVINCIA.from_title(title)
+```
+
+<ParamField path="title" type="str" required>
+  Province name (case-insensitive, accents removed)
+</ParamField>
+
+**Returns:** `Provincia` - The matching province object
+
+**Raises:** `ValueError` - If province name is not found
+
+```python Example
+from bormeparser.provincia import PROVINCIA
+
+# Get province from title
+provincia = PROVINCIA.from_title('Madrid')
+print(provincia.code)  # "28"
+
+# Works with underscores
+provincia = PROVINCIA.from_title('CIUDAD_REAL')
+print(provincia.name)  # "Ciudad Real"
+
+# Special case for Basque name
+provincia = PROVINCIA.from_title('ARABA/ÁLAVA')
+print(provincia.name)  # "Álava"
+```
+
+## Alternative Names
+
+Several provinces have alternative names (especially Basque and Catalan variants):
+
+| Standard Name | Alternative | Constant |
+|---------------|-------------|----------|
+| Álava | Araba | `ALAVA` / `ARABA` |
+| La Coruña | A Coruña | `LA_CORUNA` / `A_CORUNA` |
+| Guipúzcoa | Gipuzkoa | `GUIPUZCOA` / `GIPUZKOA` |
+| Vizcaya | Bizkaia | `VIZCAYA` / `BIZKAIA` |
+| Gerona | Girona | `GERONA` / `GIRONA` |
+| Lérida | Lleida | `LERIDA` / `LLEIDA` |
+| Orense | Ourense | `ORENSE` / `OURENSE` |
+| Islas Baleares | Illes Balears | `ISLAS_BALEARES` / `ILLES_BALEARS` |
+
+## Usage Examples
+
+### Basic Usage
+
+```python
+from bormeparser.provincia import PROVINCIA
+
+# Access province properties
+madrid = PROVINCIA.MADRID
+print(madrid.name)  # "Madrid"
+print(madrid.code)  # "28"
+print(str(madrid))  # "Madrid"
+
+# Using alternative names
+alava = PROVINCIA.ARABA  # Same as PROVINCIA.ALAVA
+print(alava.code)  # "01"
+```
+
+### Comparing Provinces
+
+```python
+from bormeparser.provincia import PROVINCIA
+
+# Object comparison
+if PROVINCIA.MADRID == PROVINCIA.MADRID:
+    print("Same province")
+
+# String comparison (case-insensitive)
+if PROVINCIA.MADRID == "madrid":
+    print("Madrid province")
+
+if PROVINCIA.BARCELONA == "BARCELONA":
+    print("Barcelona province")
+
+# Alphabetical ordering
+provinces = [PROVINCIA.MADRID, PROVINCIA.BARCELONA, PROVINCIA.ALAVA]
+provinces.sort()
+for p in provinces:
+    print(p.name)
+# Output:
+# Álava
+# Barcelona
+# Madrid
+```
+
+### Download Files by Province
+
+```python
+from bormeparser import download_pdfs
+from bormeparser.provincia import PROVINCIA
+import datetime
+
+# Download all BORMEs for Madrid
+date = datetime.date(2024, 1, 15)
+success, files = download_pdfs(
+    date=date,
+    path="./borme_files",
+    provincia=PROVINCIA.MADRID
+)
+
+print(f"Downloaded {len(files)} files for Madrid")
+
+# Download for multiple provinces
+for provincia in [PROVINCIA.MADRID, PROVINCIA.BARCELONA, PROVINCIA.VALENCIA]:
+    success, files = download_pdfs(
+        date=date,
+        path=f"./borme_{provincia.code}",
+        provincia=provincia
+    )
+    print(f"{provincia.name}: {len(files)} files")
+```
+
+### Filter Companies by Province
+
+```python
+from bormeparser import Borme
+from bormeparser.provincia import PROVINCIA
+
+# Parse BORME file
+borme = Borme.from_json('borme-2024-01-15.json')
+
+# Filter companies from specific provinces
+madrid_companies = []
+for company in borme.get_companies():
+    if company.provincia == PROVINCIA.MADRID:
+        madrid_companies.append(company)
+
+print(f"Found {len(madrid_companies)} companies in Madrid")
+
+# Count companies by province
+from collections import Counter
+
+province_counts = Counter(
+    company.provincia for company in borme.get_companies()
+)
+
+for provincia, count in province_counts.most_common(5):
+    print(f"{provincia.name}: {count} companies")
+```
+
+### All Provinces List
+
+```python
+from bormeparser.provincia import ALL_PROVINCIAS, PROVINCIA
+
+# Get list of all province names
+print(f"Total provinces: {len(ALL_PROVINCIAS)}")
+print(ALL_PROVINCIAS[:5])
+# ['ALAVA', 'ALBACETE', 'ALICANTE', 'ALMERIA', 'AVILA']
+
+# Access all province objects
+for provincia_name in ALL_PROVINCIAS:
+    provincia = getattr(PROVINCIA, provincia_name)
+    print(f"{provincia.code}: {provincia.name}")
+```
+
+### Complete Example
+
+```python
+from bormeparser import download_pdfs, Borme
+from bormeparser.provincia import PROVINCIA, ALL_PROVINCIAS
+from bormeparser.acto import ACTO
+import datetime
+
+# Download BORMEs for all provinces in a specific region
+catalonia_provinces = [
+    PROVINCIA.BARCELONA,
+    PROVINCIA.GERONA,
+    PROVINCIA.LERIDA,
+    PROVINCIA.TARRAGONA
+]
+
+date = datetime.date(2024, 1, 15)
+
+for provincia in catalonia_provinces:
+    print(f"\nProcessing {provincia.name}...")
+    
+    success, files = download_pdfs(
+        date=date,
+        path=f"./catalonia/{provincia.code}",
+        provincia=provincia
+    )
+    
+    print(f"Downloaded {len(files)} files")
+    
+    # Parse and analyze
+    for file in files:
+        borme = Borme.from_file(file)
+        
+        # Count formations
+        formations = sum(
+            1 for company in borme.get_companies()
+            if ACTO.CONSTITUCION in company.get_acts()
+        )
+        
+        print(f"  {formations} new companies formed")
+```
+
+## Province Codes Reference
+
+Complete list of province codes:
+
+| Code | Province | Code | Province |
+|------|----------|------|----------|
+| 01 | Álava | 27 | Lugo |
+| 02 | Albacete | 28 | Madrid |
+| 03 | Alicante | 29 | Málaga |
+| 04 | Almería | 30 | Murcia |
+| 05 | Ávila | 31 | Navarra |
+| 06 | Badajoz | 32 | Orense |
+| 07 | Islas Baleares | 33 | Asturias |
+| 08 | Barcelona | 34 | Palencia |
+| 09 | Burgos | 35 | Las Palmas |
+| 10 | Cáceres | 36 | Pontevedra |
+| 11 | Cádiz | 37 | Salamanca |
+| 12 | Castellón | 38 | Santa Cruz de Tenerife |
+| 13 | Ciudad Real | 39 | Cantabria |
+| 14 | Córdoba | 40 | Segovia |
+| 15 | La Coruña | 41 | Sevilla |
+| 16 | Cuenca | 42 | Soria |
+| 17 | Gerona | 43 | Tarragona |
+| 18 | Granada | 44 | Teruel |
+| 19 | Guadalajara | 45 | Toledo |
+| 20 | Guipúzcoa | 46 | Valencia |
+| 21 | Huelva | 47 | Valladolid |
+| 22 | Huesca | 48 | Vizcaya |
+| 23 | Jaén | 49 | Zamora |
+| 24 | León | 50 | Zaragoza |
+| 25 | Lérida | 51 | Ceuta |
+| 26 | La Rioja | 52 | Melilla |
+
+## Related
+
+- [Download functions](/api/download) - Download BORME files by province
+- [SECCION enum](/api/seccion) - BORME sections

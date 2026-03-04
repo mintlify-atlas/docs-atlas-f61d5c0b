@@ -1,0 +1,310 @@
+---
+title: 'BORME File Formats'
+description: 'Understanding PDF, XML, and HTML formats in BORME'
+---
+
+## Available Formats
+
+BORME publishes its data in three different formats, each serving different purposes and containing different levels of information. Understanding these formats is crucial for effectively working with BORME data.
+
+<CardGroup cols={3}>
+  <Card title="PDF" icon="file-pdf">
+    Complete detailed data (bormeparser's primary target)
+  </Card>
+  <Card title="XML" icon="file-code">
+    Metadata and document structure
+  </Card>
+  <Card title="HTML" icon="file-lines">
+    Section C announcements only
+  </Card>
+</CardGroup>
+
+## PDF Format
+
+PDF is the most important format for extracting detailed business information from BORME.
+
+### What PDF Contains
+
+PDF files contain the **complete and detailed information** about all registered acts, including:
+
+- Full company names
+- Detailed act descriptions
+- Names of appointed or revoked officers
+- Capital amounts for increases/reductions
+- Complete statutory change details
+- Registry office information
+- Official registration numbers
+
+<Note>
+**This is the format bormeparser is designed to parse.** All the rich business data you want to extract is contained in these PDF files.
+</Note>
+
+### PDF File Structure
+
+```
+BORME-{SECTION}-{YEAR}-{NBO}-{PROVINCE_CODE}.pdf
+
+Example: BORME-A-2016-75-29.pdf
+- Section: A
+- Year: 2016
+- Bulletin number: 75
+- Province code: 29 (Málaga)
+```
+
+### Downloading PDF Files
+
+PDF files are available for Sections A and B, organized by province:
+
+```python
+from bormeparser import download_pdf
+from bormeparser.provincia import PROVINCIA
+from bormeparser.seccion import SECCION
+import datetime
+
+date = datetime.date(2016, 6, 1)
+filename = "borme.pdf"
+
+# Download Section A for Madrid
+download_pdf(date, filename, SECCION.A, PROVINCIA.MADRID)
+```
+
+See `bormeparser/download.py:47` for the PDF URL format.
+
+<Info>
+PDFs require the bulletin number (nbo) which must be obtained from the XML file first. The bormeparser library handles this automatically.
+</Info>
+
+### Why PDF?
+
+Due to agreements between the Spanish government and the Mercantile Register, the most detailed and valuable data is **only available in PDF format**. While this makes automated processing more challenging, it's why bormeparser exists.
+
+## XML Format
+
+XML files serve as an index and metadata container for each day's BORME publications.
+
+### What XML Contains
+
+XML files contain:
+
+- **Bulletin metadata**: date, bulletin number (nbo), previous/next dates
+- **Document structure**: sections, provinces, announcement counts
+- **Download URLs**: links to PDF, HTML, and XML files for each document
+- **File sizes**: byte counts for each downloadable file
+- **CVE identifiers**: unique identifiers for each BORME document
+
+<Warning>
+XML files do **NOT** contain the actual business data (company names, acts, officers, etc.). They only provide the structure and links to the documents that contain this data.
+</Warning>
+
+### XML File Structure
+
+```
+BORME-S-{YYYYMMDD}
+
+Example: BORME-S-20160601
+- S indicates "Sumario" (Summary/Index)
+- Date: June 1, 2016
+```
+
+### XML URL Format
+
+```
+https://www.boe.es/diario_borme/xml.php?id=BORME-S-{YEAR}{MONTH:02d}{DAY:02d}
+```
+
+See `bormeparser/download.py:48` for implementation.
+
+### Using XML Files
+
+The XML file is essential for discovering what BORME documents are available:
+
+<Accordion title="XML Usage Example">
+```python
+from bormeparser import BormeXML
+import datetime
+
+date = datetime.date(2016, 6, 1)
+bxml = BormeXML.from_date(date)
+
+# Get bulletin number
+print(bxml.nbo)  # e.g., 101
+
+# Get available provinces for Section A
+provincias = bxml.get_provincias('A')
+print(provincias)  # ['MADRID', 'BARCELONA', ...]
+
+# Get PDF URLs for Section A
+urls = bxml.get_url_pdfs(seccion='A')
+for provincia, url in urls.items():
+    print(f"{provincia}: {url}")
+```
+</Accordion>
+
+### XML Structure
+
+The XML follows this hierarchy:
+
+```xml
+<sumario>
+  <meta>
+    <fecha>01/06/2016</fecha>
+    <fechaAnt>31/05/2016</fechaAnt>
+    <fechaSig>02/06/2016</fechaSig>
+  </meta>
+  <diario nbo="101">
+    <seccion num="A">
+      <emisor nombre="REGISTRO MERCANTIL">
+        <item id="BORME-A-2016-101-29">
+          <titulo>MÁLAGA</titulo>
+          <urlPdf szBytes="123456">/borme/dias/2016/06/01/pdfs/BORME-A-2016-101-29.pdf</urlPdf>
+          <urlXml>/diario_borme/xml.php?id=BORME-A-2016-101-29</urlXml>
+        </item>
+      </emisor>
+    </seccion>
+  </diario>
+</sumario>
+```
+
+See `bormeparser/borme.py:186-250` for the BormeXML implementation.
+
+## HTML Format
+
+HTML files are available **only for Section C** announcements.
+
+### What HTML Contains
+
+Section C announcements in HTML format, which include:
+
+- Shareholder meeting announcements
+- Capital increase/reduction notices
+- Other public corporate announcements
+
+### HTML File Structure
+
+```
+BORME-C-{YEAR}-{ANNOUNCEMENT_NUMBER}
+
+Example: BORME-C-2016-2310
+```
+
+### HTML URL Format
+
+```
+https://boe.es/diario_borme/txt.php?id=BORME-C-{YEAR}-{ANNOUNCEMENT_NUMBER}
+```
+
+See `bormeparser/download.py:49` for the HTML URL pattern.
+
+<Info>
+Section C is handled differently because it contains announcements (anuncios) that are not tied to specific provinces. See the [Sections documentation](/concepts/sections) for more details.
+</Info>
+
+## Format Comparison
+
+<Accordion title="Detailed Format Comparison">
+| Feature | PDF | XML | HTML |
+|---------|-----|-----|------|
+| **Detailed business data** | ✅ Yes | ❌ No | ⚠️ Section C only |
+| **Company names** | ✅ Yes | ❌ No | ✅ Yes (Section C) |
+| **Officer names** | ✅ Yes | ❌ No | ❌ No |
+| **Act details** | ✅ Yes | ❌ No | ✅ Yes (Section C) |
+| **Document structure** | ⚠️ Implicit | ✅ Yes | ⚠️ Basic |
+| **Download URLs** | ❌ No | ✅ Yes | ❌ No |
+| **File sizes** | ❌ No | ✅ Yes | ❌ No |
+| **Machine-readable** | ❌ Requires parsing | ✅ Yes | ⚠️ Requires parsing |
+| **Available sections** | A, B, C | All | C only |
+| **By province** | ✅ Yes (A, B) | ✅ Yes | ❌ No |
+</Accordion>
+
+## When to Use Each Format
+
+<Steps>
+  <Step title="Start with XML">
+    Use XML to discover what documents are available for a given date and get their download URLs.
+    
+    ```python
+    bxml = BormeXML.from_date(date)
+    urls = bxml.get_url_pdfs(seccion='A', provincia='MADRID')
+    ```
+  </Step>
+  
+  <Step title="Download PDFs">
+    Download the PDF files for the sections and provinces you're interested in.
+    
+    ```python
+    from bormeparser import download_pdfs
+    download_pdfs(date, path="./bormes", provincia=PROVINCIA.MADRID, seccion=SECCION.A)
+    ```
+  </Step>
+  
+  <Step title="Parse PDFs">
+    Use bormeparser to extract structured data from the PDFs.
+    
+    ```python
+    from bormeparser import parse
+    borme = parse("BORME-A-2016-101-29.pdf", SECCION.A)
+    ```
+  </Step>
+  
+  <Step title="Use HTML for Section C (Optional)">
+    If you need Section C data, HTML format may be easier to parse than PDF.
+    
+    ```python
+    urls = bxml.get_url_seccion_c(date, format='html')
+    ```
+  </Step>
+</Steps>
+
+## Technical Implementation
+
+The bormeparser library provides different backends for parsing different formats:
+
+- **PDF Parsing**: Uses PyPDF2 backend for extracting text from PDF files (`bormeparser/backends/pypdf2/`)
+- **XML Handling**: Uses lxml for parsing XML structure (`BormeXML` class)
+- **Section C HTML**: Uses lxml for HTML parsing (`bormeparser/backends/seccion_c/lxml/`)
+
+See `bormeparser/download.py:42-51` for URL patterns and `bormeparser/backends/` for parser implementations.
+
+## File Naming Conventions
+
+### Sections A and B (PDF)
+```
+BORME-{A|B}-{YEAR}-{NBO}-{PROVINCE_CODE}.pdf
+
+Components:
+- Section: A or B
+- Year: 4-digit year
+- NBO: Bulletin number (sequential within year)
+- Province code: 2-digit province code
+```
+
+### Section C
+```
+BORME-C-{YEAR}-{ANNOUNCEMENT_NUMBER}.{pdf|xml|htm}
+
+Components:
+- Section: Always C
+- Year: 4-digit year
+- Announcement number: Sequential number
+- Extension: pdf, xml, or htm
+```
+
+### XML Summary
+```
+BORME-S-{YYYYMMDD}
+
+Components:
+- S: Sumario (summary/index)
+- Date: YYYYMMDD format
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Understanding Sections" href="/concepts/sections" icon="list">
+    Learn about BORME Sections A, B, and C
+  </Card>
+  <Card title="Parsing PDFs" href="/quickstart" icon="code">
+    Start parsing BORME PDF files
+  </Card>
+</CardGroup>

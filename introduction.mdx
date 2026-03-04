@@ -1,0 +1,62 @@
+---
+title: Introduction to bormeparser
+description: A Python library for parsing BORME (Boletín Oficial del Registro Mercantil) files from Spain
+---
+
+## What is bormeparser?
+
+bormeparser is a **Python 3** library for parsing BORME (Boletín Oficial del Registro Mercantil) files, which contain official business registry information from Spain. The library allows you to extract structured data from PDF and XML files published by the Spanish Mercantile Register.
+
+## What is BORME?
+
+The **Boletín Oficial del Registro Mercantil** (Official Mercantile Register Bulletin) is a document published daily by the Registro Mercantil Central (RMC) in Spain. It contains:
+
+- Newly created companies
+- Dissolved companies
+- Changes in company structure and governance
+- Appointments and removals of corporate officers
+- Capital increases and reductions
+- Other required business registry information
+
+Since 2009, following [Spanish Law BOE-A-2008-19826](https://www.boe.es/buscar/doc.php?id=BOE-A-2008-19826), BORME is published in electronic format with the same legal validity as its paper version. BORMEs are published daily at [boe.es/diario_borme](https://boe.es/diario_borme/).
+
+<Note>
+While BORME data is published electronically, the most detailed information is only available in PDF format rather than more easily parsable formats like XML or JSON. This is where bormeparser comes in.
+</Note>
+
+## Key Features
+
+bormeparser provides a comprehensive set of tools for working with BORME files:
+
+- **PDF Parsing**: Extract structured data from BORME PDF files (Sections A and B)
+- **XML Parsing**: Parse BORME XML summary files (Section C)
+- **Download Utilities**: Automatically download BORME files by date, province, or section
+- **JSON Export**: Convert parsed BORME data to JSON format for easy integration
+- **Data Extraction**: Access company information, registry acts, officer appointments, and more
+- **Province and Section Filtering**: Query specific provinces or BORME sections
+
+## BORME Sections
+
+BORME files are organized into three sections:
+
+- **Section A**: Registered acts (Actos inscritos) - Contains registrations, amendments, and standard registry acts
+- **Section B**: Other published acts (Otros actos publicados) - Contains additional acts published by the Mercantile Register
+- **Section C**: Announcements (Anuncios) - Contains convocations, capital changes, and other company announcements
+
+## Use Cases
+
+bormeparser is ideal for:
+
+- **Business Intelligence**: Track new company formations and dissolutions
+- **Compliance Monitoring**: Monitor changes in corporate governance
+- **Data Analysis**: Analyze trends in Spanish business registry data
+- **Research**: Study corporate structure and evolution
+- **Integration**: Feed BORME data into business applications and databases
+
+## Getting Started
+
+Ready to start parsing BORME files? Check out the [Quickstart guide](/quickstart) to learn how to use bormeparser in just a few minutes.
+
+<Tip>
+For production use with API access and enterprise support, check out [LibreBOR](https://librebor.me) and the [LibreBOR API Documentation](https://docs.librebor.me/).
+</Tip>

@@ -1,0 +1,196 @@
+---
+title: Installation
+description: How to install bormeparser and its dependencies
+---
+
+## System Requirements
+
+bormeparser requires **Python 3.6 or higher**. The library has been tested on Python 3.6, 3.7, and 3.8.
+
+## System Dependencies
+
+Before installing bormeparser, you need to install some system-level dependencies. The `lxml` package used by bormeparser requires compilation and needs development headers.
+
+### Ubuntu/Debian
+
+```bash
+sudo apt-get install python3-dev libxslt1-dev libffi-dev zlib1g-dev gcc
+```
+
+### Fedora/CentOS/RHEL
+
+```bash
+sudo yum install python3-devel libxslt-devel libffi-devel zlib-devel gcc
+```
+
+### macOS
+
+On macOS, you'll need Xcode Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+<Note>
+These dependencies are required because the `lxml` library needs to compile C extensions for XML parsing performance.
+</Note>
+
+## Installation Methods
+
+<CodeGroup>
+
+```bash pip
+pip install bormeparser
+```
+
+```bash pip3
+pip3 install bormeparser
+```
+
+```bash virtual environment
+# Create a virtual environment
+python3 -m venv borme-env
+
+# Activate the virtual environment
+source borme-env/bin/activate
+
+# Install bormeparser
+pip install bormeparser
+```
+
+</CodeGroup>
+
+## Installing from Source
+
+If you want to install the latest development version or contribute to the project, you can install from source:
+
+<Steps>
+  <Step title="Install system dependencies">
+    First, install the required system packages:
+    
+    ```bash
+    sudo apt-get install python3-dev libxslt1-dev libffi-dev zlib1g-dev gcc
+    ```
+  </Step>
+  
+  <Step title="Clone the repository">
+    Clone the bormeparser repository from GitHub:
+    
+    ```bash
+    git clone https://github.com/PabloCastellano/bormeparser.git
+    cd bormeparser
+    ```
+  </Step>
+  
+  <Step title="Install the package">
+    Install bormeparser in development mode:
+    
+    ```bash
+    python setup.py install
+    ```
+    
+    Or for development:
+    
+    ```bash
+    pip install -e .
+    ```
+  </Step>
+</Steps>
+
+## Dependencies
+
+bormeparser automatically installs the following Python dependencies:
+
+- **lxml** (4.9.1) - XML and HTML parsing
+- **pdfminer.six** (20220524) - PDF text extraction
+- **PyPDF2** (2.11.0) - PDF file manipulation
+- **requests** (&gt;=2.22.0, &lt;3.0.0) - HTTP library for downloading BORME files
+- **wheel** (0.38.1) - Package building
+
+## Verifying the Installation
+
+To verify that bormeparser is installed correctly, open a Python interactive shell and try importing the library:
+
+```python
+import bormeparser
+print(bormeparser.__file__)
+```
+
+You should see the path to the installed bormeparser package without any errors.
+
+<CodeGroup>
+
+```python Test import
+import bormeparser
+from bormeparser import parse, SECCION, PROVINCIA
+
+# Check available modules
+print("bormeparser imported successfully!")
+print(f"Available sections: {SECCION.A}, {SECCION.B}, {SECCION.C}")
+```
+
+```python Check version
+import bormeparser
+import pkg_resources
+
+version = pkg_resources.get_distribution('bormeparser').version
+print(f"bormeparser version: {version}")
+```
+
+</CodeGroup>
+
+## Running Tests
+
+If you've installed from source, you can run the test suite to ensure everything works correctly:
+
+<CodeGroup>
+
+```bash All tests
+python setup.py test
+```
+
+```bash Specific test module
+python -m unittest bormeparser.tests.test_borme
+python -m unittest bormeparser.tests.test_bormeparser
+python -m unittest bormeparser.tests.test_bormeregex
+```
+
+</CodeGroup>
+
+## Troubleshooting
+
+### lxml Installation Fails
+
+If you encounter errors installing `lxml`, make sure you have installed all system dependencies:
+
+```bash
+sudo apt-get install python3-dev libxslt1-dev libffi-dev zlib1g-dev gcc
+```
+
+### Permission Denied
+
+If you get permission errors during installation, either:
+
+1. Use a virtual environment (recommended)
+2. Install with `--user` flag: `pip install --user bormeparser`
+3. Use `sudo` (not recommended): `sudo pip install bormeparser`
+
+<Warning>
+Using `sudo` with pip can cause conflicts with your system's package manager. Always prefer virtual environments.
+</Warning>
+
+### Python Version Issues
+
+bormeparser requires Python 3.6 or higher. Check your Python version:
+
+```bash
+python --version
+# or
+python3 --version
+```
+
+If you have multiple Python versions, use `pip3` instead of `pip` to ensure you're installing for Python 3.
+
+## Next Steps
+
+Now that you have bormeparser installed, head over to the [Quickstart guide](/quickstart) to learn how to use it!

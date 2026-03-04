@@ -1,0 +1,183 @@
+---
+title: Parsing BORME Files
+description: Learn how to parse BORME PDF and XML files to extract company data
+---
+
+# Parsing BORME Files
+
+The `parse()` function is the core of bormeparser. It can parse both PDF files (Section A) and XML files (Section C) to extract structured company information.
+
+## Basic Usage
+
+The `parse()` function accepts a file path and a section identifier:
+
+```python
+import bormeparser
+
+# Parse a Section A PDF file
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', bormeparser.SECCION.A)
+
+# Parse a Section C XML file
+borme = bormeparser.parse('BORME-C-2015-456.xml', bormeparser.SECCION.C)
+```
+
+## Section Types
+
+BORME files are divided into different sections:
+
+- **Section A** (`SECCION.A`): Registered acts (Actos inscritos) - PDF format
+- **Section B** (`SECCION.B`): Other acts published in the Commercial Registry - PDF format
+- **Section C** (`SECCION.C`): Announcements (convocatorias, capital changes, etc.) - XML format
+
+```python
+from bormeparser import SECCION
+
+# Using section constants
+seccion_a = SECCION.A  # 'A'
+seccion_b = SECCION.B  # 'B'
+seccion_c = SECCION.C  # 'C'
+```
+
+## Parser Backends
+
+bormeparser uses different backends for different file types:
+
+<Steps>
+  <Step title="PDF Parser (Sections A & B)">
+    Uses PyPDF2 backend to extract text from PDF files:
+    
+    ```python
+    # Default parser for Section A
+    # Backend: bormeparser.backends.pypdf2.parser.PyPDF2Parser
+    borme = bormeparser.parse('BORME-A-2015-123.pdf', 'A')
+    ```
+  </Step>
+  
+  <Step title="XML Parser (Section C)">
+    Uses lxml backend to parse XML files:
+    
+    ```python
+    # Default parser for Section C
+    # Backend: bormeparser.backends.seccion_c.lxml.parser.LxmlBormeCParser
+    borme = bormeparser.parse('BORME-C-2015-456.xml', 'C')
+    ```
+  </Step>
+</Steps>
+
+## Parsing from File Path
+
+The `parse()` function automatically detects if the input is a file path:
+
+```python
+import bormeparser
+import os
+
+# Parse from absolute path
+filepath = '/path/to/BORME-A-2015-123-29.pdf'
+borme = bormeparser.parse(filepath, bormeparser.SECCION.A)
+
+# Parse from relative path
+if os.path.isfile('downloads/BORME-A-2015-123-29.pdf'):
+    borme = bormeparser.parse('downloads/BORME-A-2015-123-29.pdf', 'A')
+```
+
+## Parsing from URL
+
+You can also parse directly from a URL (though downloading first is recommended):
+
+```python
+import bormeparser
+
+# Parse from URL (experimental)
+url = 'https://boe.es/borme/dias/2015/06/01/pdfs/BORME-A-2015-101-29.pdf'
+borme = bormeparser.parse(url, bormeparser.SECCION.A)
+```
+
+<Note>
+  Parsing from URLs is experimental. For production use, download the file first using `download_pdf()` and then parse the local file.
+</Note>
+
+## Return Value
+
+The `parse()` function returns a `Borme` object containing:
+
+```python
+# Parse the file
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Access Borme object properties
+print(borme.date)        # datetime.date(2015, 6, 1)
+print(borme.seccion)     # 'A'
+print(borme.provincia)   # Provincia object
+print(borme.num)         # BORME number
+print(borme.cve)         # CVE identifier
+print(borme.filename)    # Original filename
+```
+
+## Error Handling
+
+<Steps>
+  <Step title="Handle missing files">
+    ```python
+    import bormeparser
+    import os
+    
+    filepath = 'BORME-A-2015-123-29.pdf'
+    
+    try:
+        if not os.path.isfile(filepath):
+            raise IOError(f'File not found: {filepath}')
+        borme = bormeparser.parse(filepath, 'A')
+    except IOError as e:
+        print(f'Error: {e}')
+    ```
+  </Step>
+  
+  <Step title="Handle parsing errors">
+    ```python
+    import bormeparser
+    from bormeparser.exceptions import BormeDoesntExistException
+    
+    try:
+        borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+    except BormeDoesntExistException:
+        print('BORME file is invalid or corrupted')
+    except Exception as e:
+        print(f'Parsing failed: {e}')
+    ```
+  </Step>
+</Steps>
+
+## Complete Example
+
+Here's a complete example from `scripts/borme_to_json.py`:
+
+```python
+import bormeparser
+import bormeparser.backends.pypdf2.parser
+import logging
+
+# Enable debug logging (optional)
+bormeparser.borme.logger.setLevel(logging.DEBUG)
+bormeparser.backends.pypdf2.parser.logger.setLevel(logging.DEBUG)
+
+# Parse the BORME file
+filename = 'BORME-A-2015-123-29.pdf'
+print(f'Parsing {filename}')
+
+borme = bormeparser.parse(filename, bormeparser.SECCION.A)
+
+# Access parsed data
+print(f'Date: {borme.date}')
+print(f'Section: {borme.seccion}')
+print(f'Province: {borme.provincia}')
+print(f'Number of announcements: {len(borme.get_anuncios())}')
+```
+
+## Next Steps
+
+After parsing a BORME file, you can:
+
+- [Extract company data](/guides/extracting-data) from the Borme object
+- [Convert to JSON](/guides/converting-to-json) for easier data manipulation
+- Access individual announcements and acts

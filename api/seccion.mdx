@@ -1,0 +1,368 @@
+---
+title: SECCION Enum
+description: BORME document sections and subsections
+---
+
+The `SECCION` class defines constants for the different sections of BORME (Spanish Official Gazette of the Commercial Registry) documents.
+
+## Overview
+
+BORME is organized into sections that classify different types of commercial registry publications. The most commonly used are sections A and B, which contain registered acts and other publications respectively.
+
+## Section Constants
+
+<ParamField path="A" type="str" default="'A'">
+  **Section A - Registered Acts (Actos inscritos)**
+  
+  Contains acts that have been registered in the Commercial Registry, including:
+  - Company formations (constituciones)
+  - Appointments and resignations (nombramientos y ceses)
+  - Capital increases and reductions
+  - Mergers and acquisitions
+  - Dissolutions and liquidations
+  - Statutory modifications
+  - Changes in registered office
+  - And other registered corporate acts
+</ParamField>
+
+<ParamField path="B" type="str" default="'B'">
+  **Section B - Other Published Acts (Otros actos publicados en el Registro Mercantil)**
+  
+  Contains other acts published in the Commercial Registry that don't require full registration:
+  - Annual accounts filings
+  - Audit reports
+  - Other supplementary information
+</ParamField>
+
+<ParamField path="C" type="str" default="'C'">
+  **Section C - Other Information**
+  
+  Contains additional commercial information:
+  - General shareholders' meetings announcements (convocatorias de juntas)
+  - Capital operations announcements
+  - Other corporate announcements
+  
+  <Note>Section C documents use a different URL structure and numbering system than A and B</Note>
+</ParamField>
+
+## SUBSECCION Class
+
+The `SUBSECCION` class provides constants for subsection classification:
+
+<ParamField path="ACTOS_INSCRITOS" type="str" default="'A'">
+  Registered acts (corresponds to Section A)
+</ParamField>
+
+<ParamField path="OTROS_ACTOS" type="str" default="'B'">
+  Other published acts (corresponds to Section B)
+</ParamField>
+
+## Static Methods
+
+### from_borme()
+
+Determine the section from BORME document headings.
+
+```python
+SECCION.from_borme(seccion, subseccion)
+```
+
+<ParamField path="seccion" type="str" required>
+  Section heading from BORME (e.g., "SECCIÓN PRIMERA")
+</ParamField>
+
+<ParamField path="subseccion" type="str" required>
+  Subsection heading (e.g., "Actos inscritos", "Otros actos publicados en el Registro Mercantil")
+</ParamField>
+
+**Returns:** `str` - Section constant ('A' or 'B')
+
+**Raises:** `ValueError` - If section/subsection combination is invalid
+
+```python Example
+from bormeparser.seccion import SECCION
+
+# Determine section from BORME headings
+seccion = SECCION.from_borme(
+    "SECCIÓN PRIMERA",
+    "Actos inscritos"
+)
+print(seccion)  # 'A'
+
+seccion = SECCION.from_borme(
+    "SECCIÓN PRIMERA",
+    "Otros actos publicados en el Registro Mercantil"
+)
+print(seccion)  # 'B'
+```
+
+## Usage Examples
+
+### Basic Usage
+
+```python
+from bormeparser.seccion import SECCION
+
+# Access section constants
+print(SECCION.A)  # 'A'
+print(SECCION.B)  # 'B'
+print(SECCION.C)  # 'C'
+
+# Use in conditionals
+section = SECCION.A
+if section == SECCION.A:
+    print("Processing registered acts")
+elif section == SECCION.B:
+    print("Processing other published acts")
+```
+
+### Download by Section
+
+```python
+from bormeparser import download_pdfs, get_url_pdf
+from bormeparser.seccion import SECCION
+from bormeparser.provincia import PROVINCIA
+import datetime
+
+# Download all Section A BORMEs for a date
+date = datetime.date(2024, 1, 15)
+success, files = download_pdfs(
+    date=date,
+    path="./section_a",
+    seccion=SECCION.A
+)
+
+print(f"Downloaded {len(files)} Section A files")
+
+# Download a specific province's Section B
+url = get_url_pdf(
+    date=date,
+    seccion=SECCION.B,
+    provincia=PROVINCIA.MADRID
+)
+```
+
+### Filter by Section
+
+```python
+from bormeparser import Borme
+from bormeparser.seccion import SECCION
+
+# Parse BORME file
+borme = Borme.from_file('borme-a-2024-10.pdf', SECCION.A)
+
+if borme.seccion == SECCION.A:
+    print("This is a Section A BORME (registered acts)")
+    
+    # Process registered acts
+    for company in borme.get_companies():
+        print(f"{company.name}: {len(company.get_acts())} acts")
+
+elif borme.seccion == SECCION.B:
+    print("This is a Section B BORME (other published acts)")
+```
+
+### Section-specific Processing
+
+```python
+from bormeparser import Borme
+from bormeparser.seccion import SECCION
+from bormeparser.acto import ACTO
+
+def process_borme_by_section(filepath, seccion):
+    """Process BORME file based on its section."""
+    borme = Borme.from_file(filepath, seccion)
+    
+    if seccion == SECCION.A:
+        # Section A: Focus on registered corporate acts
+        print("\nREGISTERED ACTS SUMMARY")
+        print("=" * 50)
+        
+        # Count formations
+        formations = sum(
+            1 for company in borme.get_companies()
+            if ACTO.CONSTITUCION in company.get_acts()
+        )
+        print(f"New companies formed: {formations}")
+        
+        # Count appointments
+        appointments_count = sum(
+            len(company.get_acts().get(ACTO.NOMBRAMIENTOS, []))
+            for company in borme.get_companies()
+        )
+        print(f"Total appointments: {appointments_count}")
+        
+        # Count capital increases
+        capital_increases = sum(
+            1 for company in borme.get_companies()
+            if ACTO.AMPLIACION_DE_CAPITAL in company.get_acts()
+        )
+        print(f"Capital increases: {capital_increases}")
+        
+    elif seccion == SECCION.B:
+        # Section B: Focus on annual accounts and audits
+        print("\nOTHER PUBLISHED ACTS SUMMARY")
+        print("=" * 50)
+        print(f"Total companies: {len(borme.get_companies())}")
+        # Additional Section B specific processing
+
+# Use the function
+import datetime
+date = datetime.date(2024, 1, 15)
+
+process_borme_by_section('borme-a-2024-10-28.pdf', SECCION.A)
+process_borme_by_section('borme-b-2024-10-28.pdf', SECCION.B)
+```
+
+### Download All Sections
+
+```python
+from bormeparser import download_pdfs
+from bormeparser.seccion import SECCION
+from bormeparser.provincia import PROVINCIA
+import datetime
+
+date = datetime.date(2024, 1, 15)
+provincia = PROVINCIA.MADRID
+
+# Download both Section A and B for Madrid
+for seccion in [SECCION.A, SECCION.B]:
+    success, files = download_pdfs(
+        date=date,
+        path=f"./madrid_{seccion.lower()}",
+        seccion=seccion
+    )
+    
+    print(f"Section {seccion}: {len(files)} files downloaded")
+```
+
+### URL Pattern Differences
+
+```python
+from bormeparser.download import (
+    BORME_AB_PDF_URL,
+    BORME_C_PDF_URL,
+    BORME_C_XML_URL
+)
+
+# Section A and B use the same URL pattern
+print("Sections A/B URL pattern:")
+print(BORME_AB_PDF_URL)
+# {protocol}://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-{seccion}-{year}-{nbo}-{provincia}.pdf
+
+print("\nSection C URL pattern:")
+print(BORME_C_PDF_URL)
+# {protocol}://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-C-{year}-{anuncio}.pdf
+
+print("\nSection C uses announcement numbers instead of province codes")
+```
+
+### Validation
+
+```python
+from bormeparser.seccion import SECCION
+
+def validate_section(seccion):
+    """Validate that a section value is valid."""
+    valid_sections = [SECCION.A, SECCION.B, SECCION.C]
+    
+    if seccion not in valid_sections:
+        raise ValueError(
+            f"Invalid section '{seccion}'. "
+            f"Must be one of: {valid_sections}"
+        )
+    
+    return seccion
+
+# Use validation
+try:
+    section = validate_section('A')  # OK
+    section = validate_section('D')  # Raises ValueError
+except ValueError as e:
+    print(e)
+```
+
+### Complete Example
+
+```python
+from bormeparser import download_pdfs, Borme
+from bormeparser.seccion import SECCION
+from bormeparser.provincia import PROVINCIA
+from bormeparser.acto import ACTO
+import datetime
+
+def analyze_province_by_sections(date, provincia):
+    """Download and analyze all sections for a province."""
+    
+    print(f"\nAnalyzing {provincia.name} - {date}")
+    print("=" * 60)
+    
+    for seccion in [SECCION.A, SECCION.B]:
+        print(f"\nSection {seccion}:")
+        
+        # Download
+        success, files = download_pdfs(
+            date=date,
+            path=f"./analysis/{provincia.code}/{seccion}",
+            provincia=provincia,
+            seccion=seccion
+        )
+        
+        if not files:
+            print("  No files available")
+            continue
+        
+        # Parse and analyze
+        for file in files:
+            borme = Borme.from_file(file, seccion)
+            companies = borme.get_companies()
+            
+            print(f"  Total companies: {len(companies)}")
+            
+            if seccion == SECCION.A:
+                # Detailed Section A analysis
+                formations = sum(
+                    1 for c in companies
+                    if ACTO.CONSTITUCION in c.get_acts()
+                )
+                dissolutions = sum(
+                    1 for c in companies
+                    if ACTO.DISOLUCION in c.get_acts()
+                )
+                
+                print(f"  New formations: {formations}")
+                print(f"  Dissolutions: {dissolutions}")
+
+# Run analysis
+date = datetime.date(2024, 1, 15)
+analyze_province_by_sections(date, PROVINCIA.MADRID)
+analyze_province_by_sections(date, PROVINCIA.BARCELONA)
+```
+
+## Section Characteristics
+
+| Section | Name | Content | Frequency | Download Pattern |
+|---------|------|---------|-----------|------------------|
+| A | Registered Acts | Corporate registry acts | Daily | By province or all provinces |
+| B | Other Acts | Annual accounts, audits | Daily | By province or all provinces |
+| C | Announcements | Meeting notices, announcements | As published | By announcement number |
+
+## Important Notes
+
+<Warning>
+Section C has a different URL structure and cannot be downloaded using the same methods as sections A and B. It requires announcement numbers instead of province codes.
+</Warning>
+
+<Note>
+When parsing BORME files, always specify the correct section to ensure proper parsing of the document structure.
+</Note>
+
+<Tip>
+Section A typically contains the most valuable data for corporate intelligence, including company formations, officer changes, and capital operations.
+</Tip>
+
+## Related
+
+- [Download functions](/api/download) - Download BORME files by section
+- [ACTO enum](/api/acto) - Act types found in Section A
+- [PROVINCIA enum](/api/provincia) - Spanish provinces

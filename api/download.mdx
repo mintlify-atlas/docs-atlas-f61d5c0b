@@ -1,0 +1,295 @@
+---
+title: Download Functions
+description: Download BORME files in PDF and XML formats
+---
+
+The download module provides functions to download BORME (Spanish Official Gazette of the Commercial Registry) files in PDF and XML formats.
+
+## download_pdf()
+
+Download a single BORME PDF file for a specific date, section, and province.
+
+```python
+download_pdf(date, filename, seccion, provincia, parse=False)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="filename" type="str" required>
+  Path where the PDF file will be saved
+</ParamField>
+
+<ParamField path="seccion" type="str | SECCION" required>
+  Section: `'A'`, `'B'`, `'C'` or `SECCION.A`, `SECCION.B`, `SECCION.C`
+</ParamField>
+
+<ParamField path="provincia" type="PROVINCIA" required>
+  Province object (e.g., `PROVINCIA.MADRID`, `PROVINCIA.BARCELONA`)
+</ParamField>
+
+<ParamField path="parse" type="bool" default="False">
+  Whether to parse the PDF file after downloading
+</ParamField>
+
+**Returns:** `bool` - `True` if downloaded and parsed (when `parse=True`), `False` otherwise
+
+```python Example
+from bormeparser import download_pdf
+from bormeparser.provincia import PROVINCIA
+from bormeparser.seccion import SECCION
+import datetime
+
+# Download BORME for Madrid, Section A
+date = datetime.date(2024, 1, 15)
+download_pdf(
+    date=date,
+    filename="borme-madrid.pdf",
+    seccion=SECCION.A,
+    provincia=PROVINCIA.MADRID
+)
+
+# Using tuple for date
+download_pdf(
+    date=(2024, 1, 15),
+    filename="borme-barcelona.pdf",
+    seccion='A',
+    provincia=PROVINCIA.BARCELONA,
+    parse=True
+)
+```
+
+## download_pdfs()
+
+Download multiple BORME PDF files for a specific date and province or section.
+
+```python
+download_pdfs(date, path, provincia=None, seccion=None, secure=True)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="path" type="str" required>
+  Directory path where PDF files will be saved
+</ParamField>
+
+<ParamField path="provincia" type="PROVINCIA">
+  Province to download BORMEs for (mutually exclusive with `seccion`)
+</ParamField>
+
+<ParamField path="seccion" type="str | SECCION">
+  Section to download BORMEs for: `'A'` or `'B'` only (mutually exclusive with `provincia`)
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Use HTTPS instead of HTTP
+</ParamField>
+
+**Returns:** `tuple[bool, list[str]]` - `(True, list_of_downloaded_files)`
+
+<Note>
+You must specify either `provincia` or `seccion`, but not both.
+</Note>
+
+```python Example
+import datetime
+from bormeparser import download_pdfs
+from bormeparser.provincia import PROVINCIA
+from bormeparser.seccion import SECCION
+
+# Download all Section A BORMEs for a specific date
+date = datetime.date(2024, 1, 15)
+success, files = download_pdfs(
+    date=date,
+    path="./borme_files",
+    seccion=SECCION.A
+)
+
+print(f"Downloaded {len(files)} files")
+
+# Download all BORMEs for a specific province
+success, files = download_pdfs(
+    date=(2024, 1, 15),
+    path="./madrid_borme",
+    provincia=PROVINCIA.MADRID
+)
+```
+
+## download_xml()
+
+Download the XML summary file containing URLs of all BORMEs for a specific date.
+
+```python
+download_xml(date, filename, secure=True)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="filename" type="str" required>
+  Path where the XML file will be saved
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Use HTTPS instead of HTTP
+</ParamField>
+
+**Returns:** `bool` - `True` if downloaded, `False` if file already exists
+
+```python Example
+import datetime
+from bormeparser import download_xml
+
+# Download XML summary for a specific date
+date = datetime.date(2024, 1, 15)
+download_xml(
+    date=date,
+    filename="borme-summary.xml"
+)
+```
+
+## get_url_pdf()
+
+Get the URL for downloading a specific BORME PDF file.
+
+```python
+get_url_pdf(date, seccion, provincia, secure=True)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="seccion" type="str | SECCION" required>
+  Section: `'A'`, `'B'`, or `'C'`
+</ParamField>
+
+<ParamField path="provincia" type="PROVINCIA" required>
+  Province object
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Use HTTPS instead of HTTP
+</ParamField>
+
+**Returns:** `str` - URL to download the PDF
+
+<Note>
+This function requires an internet connection as it fetches the XML to determine the bulletin number (nbo).
+</Note>
+
+```python Example
+from bormeparser import get_url_pdf
+from bormeparser.provincia import PROVINCIA
+from bormeparser.seccion import SECCION
+import datetime
+
+date = datetime.date(2024, 1, 15)
+url = get_url_pdf(
+    date=date,
+    seccion=SECCION.A,
+    provincia=PROVINCIA.MADRID
+)
+
+print(url)
+# https://boe.es/borme/dias/2024/01/15/pdfs/BORME-A-2024-10-28.pdf
+```
+
+## get_url_pdfs()
+
+Get URLs for downloading multiple BORME PDF files.
+
+```python
+get_url_pdfs(date, seccion=None, provincia=None, secure=True)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="seccion" type="str | SECCION">
+  Section: `'A'` or `'B'` only (mutually exclusive with `provincia`)
+</ParamField>
+
+<ParamField path="provincia" type="PROVINCIA">
+  Province object (mutually exclusive with `seccion`)
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Use HTTPS instead of HTTP
+</ParamField>
+
+**Returns:** `dict` - Dictionary mapping province names (or sections) to URLs
+
+```python Example
+from bormeparser import get_url_pdfs
+from bormeparser.seccion import SECCION
+import datetime
+
+# Get all URLs for Section A
+date = datetime.date(2024, 1, 15)
+urls = get_url_pdfs(date=date, seccion=SECCION.A)
+
+for provincia, url in urls.items():
+    print(f"{provincia}: {url}")
+
+# Output:
+# A CORUÑA: https://boe.es/borme/dias/2024/01/15/pdfs/BORME-A-2024-10-15.pdf
+# ALBACETE: https://boe.es/borme/dias/2024/01/15/pdfs/BORME-A-2024-10-02.pdf
+# ...
+```
+
+## get_url_xml()
+
+Get the URL for the XML summary file for a specific date.
+
+```python
+get_url_xml(date, secure=True)
+```
+
+<ParamField path="date" type="tuple | datetime.date" required>
+  Date as either a tuple `(year, month, day)` or a `datetime.date` object
+</ParamField>
+
+<ParamField path="secure" type="bool" default="True">
+  Use HTTPS instead of HTTP
+</ParamField>
+
+**Returns:** `str` - URL to download the XML summary
+
+```python Example
+from bormeparser import get_url_xml
+import datetime
+
+date = datetime.date(2024, 1, 15)
+url = get_url_xml(date=date)
+
+print(url)
+# https://www.boe.es/diario_borme/xml.php?id=BORME-S-20240115
+```
+
+## URL Patterns
+
+The module uses the following URL patterns:
+
+```python
+# PDF URLs for sections A and B
+BORME_AB_PDF_URL = "{protocol}://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-{seccion}-{year}-{nbo}-{provincia}.pdf"
+
+# XML summary URL
+BORME_XML_URL = "{protocol}://www.boe.es/diario_borme/xml.php?id=BORME-S-{year}{month:02d}{day:02d}"
+
+# Section C URLs
+BORME_C_PDF_URL = "{protocol}://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-C-{year}-{anuncio}.pdf"
+BORME_C_XML_URL = "{protocol}://boe.es/diario_borme/xml.php?id=BORME-C-{year}-{anuncio}"
+BORME_C_HTM_URL = "{protocol}://boe.es/diario_borme/txt.php?id=BORME-C-{year}-{anuncio}"
+```
+
+## Related
+
+- [SECCION enum](/api/seccion) - BORME section constants
+- [PROVINCIA enum](/api/provincia) - Spanish province constants

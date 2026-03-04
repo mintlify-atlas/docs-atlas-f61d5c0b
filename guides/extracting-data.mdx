@@ -1,0 +1,343 @@
+---
+title: Extracting Company Data
+description: Learn how to extract and work with company announcements and commercial acts from BORME files
+---
+
+# Extracting Company Data
+
+After parsing a BORME file, you can extract detailed information about companies, their commercial acts, and registry data.
+
+## The Borme Object
+
+A parsed BORME file returns a `Borme` object with the following properties:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Basic properties
+print(borme.date)        # datetime.date(2015, 6, 1)
+print(borme.seccion)     # 'A'
+print(borme.provincia)   # Provincia('Málaga')
+print(borme.num)         # 123 (BORME number)
+print(borme.cve)         # 'BORME-A-2015-123-29'
+print(borme.url)         # Download URL
+print(borme.filename)    # 'BORME-A-2015-123-29.pdf'
+```
+
+## Getting All Announcements
+
+Use `get_anuncios()` to retrieve all company announcements:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Get all announcements
+anuncios = borme.get_anuncios()
+print(f'Total announcements: {len(anuncios)}')
+
+# Iterate over announcements
+for anuncio in anuncios:
+    print(f'{anuncio.id}: {anuncio.empresa}')
+```
+
+### Example Output
+
+```
+Total announcements: 147
+1234: EXAMPLE COMPANY SL
+1235: TECHNOLOGY SOLUTIONS SA
+1236: CONSULTING GROUP SL
+...
+```
+
+## Getting Announcement IDs
+
+Get a sorted list of announcement IDs:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Get list of announcement IDs
+ids = borme.get_anuncios_ids()
+print(ids)
+# [1234, 1235, 1236, 1237, ...]
+
+# Get announcement range
+print(f'From announcement {ids[0]} to {ids[-1]}')
+print(f'Total: {len(ids)} announcements')
+```
+
+## Accessing a Specific Announcement
+
+Retrieve a single announcement by its ID:
+
+```python
+import bormeparser
+from bormeparser.exceptions import BormeAnuncioNotFound
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+try:
+    anuncio = borme.get_anuncio(1234)
+    print(f'Company: {anuncio.empresa}')
+except BormeAnuncioNotFound:
+    print('Announcement not found')
+```
+
+## BormeAnuncio Object
+
+Each announcement contains information about a company and its commercial acts:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+anuncio = borme.get_anuncios()[0]
+
+# Basic announcement properties
+print(f'ID: {anuncio.id}')
+print(f'Company: {anuncio.empresa}')
+print(f'Registry: {anuncio.registro}')
+print(f'Branch office: {anuncio.sucursal}')
+print(f'Liquidation: {anuncio.liquidacion}')
+print(f'Registry data: {anuncio.datos_registrales}')
+```
+
+### Properties
+
+- `id`: Announcement ID number
+- `empresa`: Company name
+- `registro`: Commercial registry name
+- `sucursal`: Branch office indicator (True/False)
+- `liquidacion`: Liquidation indicator (True/False)
+- `datos_registrales`: Raw registry data string
+- `actos`: List of `BormeActo` objects
+
+## Getting Commercial Acts
+
+Each announcement contains one or more commercial acts (actos mercantiles):
+
+### Using get_actos()
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+anuncio = borme.get_anuncios()[0]
+
+# Iterate over acts
+for acto_name, acto_value in anuncio.get_actos():
+    print(f'{acto_name}: {acto_value}')
+```
+
+### Using get_borme_actos()
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+anuncio = borme.get_anuncios()[0]
+
+# Get BormeActo objects
+actos = anuncio.get_borme_actos()
+
+for acto in actos:
+    print(f'Act type: {acto.__class__.__name__}')
+    print(f'Name: {acto.name}')
+    print(f'Value: {acto.value}')
+    print('---')
+```
+
+## Understanding BormeActo Objects
+
+There are two types of commercial acts:
+
+### BormeActoTexto
+
+Acts with simple text values:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+anuncio = borme.get_anuncios()[0]
+
+for acto in anuncio.get_borme_actos():
+    if acto.__class__.__name__ == 'BormeActoTexto':
+        print(f'{acto.name}: {acto.value}')
+        # Example:
+        # Constitución: 2015-05-15
+        # Objeto social: Servicios de consultoría
+        # Capital: 3000.00 Euros
+```
+
+### BormeActoCargo
+
+Acts involving positions/roles with associated people:
+
+```python
+import bormeparser
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+anuncio = borme.get_anuncios()[0]
+
+for acto in anuncio.get_borme_actos():
+    if acto.__class__.__name__ == 'BormeActoCargo':
+        print(f'\nAct: {acto.name}')
+        
+        # Access positions and names
+        for cargo, nombres in acto.cargos.items():
+            print(f'  Position: {cargo}')
+            for nombre in nombres:
+                print(f'    - {nombre}')
+        
+        # Example output:
+        # Act: Nombramientos
+        #   Position: Administrador único
+        #     - JOHN DOE SMITH
+        #   Position: Secretario
+        #     - JANE DOE JOHNSON
+```
+
+## Complete Extraction Example
+
+Here's a comprehensive example that extracts all data from a BORME file:
+
+```python
+import bormeparser
+
+def extract_company_data(filename):
+    """Extract all company data from a BORME file"""
+    # Parse the file
+    borme = bormeparser.parse(filename, bormeparser.SECCION.A)
+    
+    print(f'BORME Date: {borme.date}')
+    print(f'Province: {borme.provincia}')
+    print(f'CVE: {borme.cve}')
+    print(f'Total announcements: {len(borme.get_anuncios())}')
+    print('\n' + '='*80 + '\n')
+    
+    # Process each announcement
+    for anuncio in borme.get_anuncios():
+        print(f'Announcement #{anuncio.id}')
+        print(f'Company: {anuncio.empresa}')
+        print(f'Registry: {anuncio.registro}')
+        
+        if anuncio.sucursal:
+            print('Type: Branch Office')
+        if anuncio.liquidacion:
+            print('Status: In Liquidation')
+        
+        print(f'\nCommercial Acts:')
+        
+        # Process each act
+        for acto in anuncio.get_borme_actos():
+            if acto.__class__.__name__ == 'BormeActoTexto':
+                # Simple text act
+                print(f'  {acto.name}: {acto.value}')
+            
+            elif acto.__class__.__name__ == 'BormeActoCargo':
+                # Position-based act
+                print(f'  {acto.name}:')
+                for cargo, nombres in acto.cargos.items():
+                    print(f'    {cargo}:')
+                    for nombre in sorted(nombres):
+                        print(f'      - {nombre}')
+        
+        print('\n' + '-'*80 + '\n')
+
+# Usage
+extract_company_data('BORME-A-2015-123-29.pdf')
+```
+
+## Filtering by Act Type
+
+Filter announcements by specific commercial acts:
+
+```python
+import bormeparser
+from bormeparser import ACTO
+
+borme = bormeparser.parse('BORME-A-2015-123-29.pdf', 'A')
+
+# Find all new company formations
+for anuncio in borme.get_anuncios():
+    for acto_name, acto_value in anuncio.get_actos():
+        if acto_name == 'Constitución':
+            print(f'{anuncio.empresa}: Founded on {acto_value}')
+
+# Find all appointments
+for anuncio in borme.get_anuncios():
+    for acto in anuncio.get_borme_actos():
+        if acto.name == 'Nombramientos':
+            print(f'\n{anuncio.empresa}:')
+            for cargo, nombres in acto.cargos.items():
+                print(f'  {cargo}: {len(nombres)} person(s)')
+```
+
+## Common Act Types
+
+BORME files contain various types of commercial acts:
+
+- **Constitución**: Company formation
+- **Nombramientos**: Appointments to positions
+- **Revocaciones**: Revocations of positions
+- **Ceses**: Resignations/terminations
+- **Poderes**: Powers of attorney
+- **Objeto social**: Business purpose
+- **Capital**: Share capital
+- **Domicilio**: Registered address
+- **Ampliación de capital**: Capital increase
+- **Reducción de capital**: Capital reduction
+- **Disolución**: Dissolution
+- **Extinción**: Extinction
+- **Fusión**: Merger
+
+## Exporting to Custom Format
+
+Create custom data structures from BORME data:
+
+```python
+import bormeparser
+
+def export_to_list(filename):
+    """Export BORME data to a list of dictionaries"""
+    borme = bormeparser.parse(filename, bormeparser.SECCION.A)
+    companies = []
+    
+    for anuncio in borme.get_anuncios():
+        company = {
+            'id': anuncio.id,
+            'name': anuncio.empresa,
+            'registry': anuncio.registro,
+            'branch': anuncio.sucursal,
+            'liquidation': anuncio.liquidacion,
+            'acts': {}
+        }
+        
+        for acto_name, acto_value in anuncio.get_actos():
+            company['acts'][acto_name] = acto_value
+        
+        companies.append(company)
+    
+    return companies
+
+# Usage
+companies = export_to_list('BORME-A-2015-123-29.pdf')
+print(f'Exported {len(companies)} companies')
+```
+
+## Next Steps
+
+Now that you can extract company data, you can:
+
+- [Convert the data to JSON](/guides/converting-to-json) for easier analysis
+- Build databases of company information
+- Track changes in company structures over time
+- Analyze commercial registry trends

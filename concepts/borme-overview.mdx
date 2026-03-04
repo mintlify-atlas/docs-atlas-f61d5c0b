@@ -1,0 +1,146 @@
+---
+title: 'What is BORME?'
+description: 'Understanding the Boletín Oficial del Registro Mercantil'
+---
+
+## Overview
+
+The **Boletín Oficial del Registro Mercantil** (BORME) is Spain's official business registry bulletin, published daily by the Registro Mercantil Central (RMC). It contains crucial information about business activities across Spain, including newly created companies, dissolved entities, and mandatory corporate filings.
+
+<Note>
+BORME is the authoritative source for tracking business registry changes in Spain, making it essential for corporate intelligence, due diligence, and compliance.
+</Note>
+
+## Purpose and Legal Background
+
+BORME serves as the official public record of all mercantile registry activities in Spain. Companies are legally required to publish certain corporate events and changes in BORME.
+
+### Electronic Publication Law
+
+Since 2009, BORME has been published in electronic format following the approval of [Royal Decree 1828/2008](https://www.boe.es/buscar/doc.php?id=BOE-A-2008-19826). This law established that:
+
+- Electronic BORMEs have the same legal validity as paper versions
+- Publications must be made daily in digital format
+- All registry changes must be publicly accessible
+
+<Info>
+The electronic format requirement has made it possible to programmatically access business registry data, though some limitations remain in the available formats.
+</Info>
+
+## What Data is Published
+
+BORME publishes a comprehensive record of mercantile registry activities, including:
+
+### Company Lifecycle Events
+
+<CardGroup cols={2}>
+  <Card title="Creations" icon="building">
+    New company formations and incorporations
+  </Card>
+  <Card title="Dissolutions" icon="circle-xmark">
+    Company closures and liquidations
+  </Card>
+  <Card title="Transformations" icon="arrows-rotate">
+    Changes in company structure or legal form
+  </Card>
+  <Card title="Mergers & Acquisitions" icon="handshake">
+    Business combinations and absorptions
+  </Card>
+</CardGroup>
+
+### Corporate Changes
+
+BORME records mandatory corporate events such as:
+
+- **Appointments and revocations** of directors and officers
+- **Capital changes** (increases or reductions)
+- **Address changes** for registered offices
+- **Statutory modifications** to company bylaws
+- **Name changes** for corporate entities
+- **Bankruptcy proceedings** and insolvency situations
+
+### Administrative Actions
+
+- Registry closures and reopenings
+- Website registrations
+- Branch office openings
+- Unipersonal company declarations
+
+<Accordion title="Complete List of Registered Acts">
+The bormeparser library recognizes over 50 different types of acts (actos) that can appear in BORME, including:
+
+- Nombramientos (Appointments)
+- Revocaciones (Revocations)
+- Ceses/Dimisiones (Resignations)
+- Constitución (Incorporation)
+- Disolución (Dissolution)
+- Ampliación de capital (Capital increase)
+- Reducción de capital (Capital reduction)
+- Fusión por absorción (Merger by absorption)
+- Situación concursal (Bankruptcy situation)
+- Modificaciones estatutarias (Statutory modifications)
+- Cambio de denominación social (Name change)
+- Cambio de domicilio social (Address change)
+- And many more...
+
+See `bormeparser/acto.py:20-78` for the complete enumeration.
+</Accordion>
+
+## Daily Publication
+
+BORME is published every business day, with each edition containing:
+
+- A unique bulletin number (nbo)
+- A specific publication date
+- Multiple sections (A, B, and C)
+- Provincial subdivisions for sections A and B
+
+### Accessing BORME
+
+Official BORMEs are available at:
+
+**Official Source**: [https://boe.es/diario_borme/](https://boe.es/diario_borme/)
+
+<Warning>
+While BORME is published electronically, not all data is available in structured formats like XML or JSON. The most detailed information is only available in PDF files, which is why bormeparser was created to extract structured data from these PDFs.
+</Warning>
+
+## Data Format Limitations
+
+Due to agreements between the Spanish government and the Mercantile Register, the most valuable business data is only published in PDF format. This means:
+
+- **XML files** contain metadata and document structure but not detailed company information
+- **PDF files** contain the complete detailed data but require parsing
+- **HTML files** are available only for Section C
+
+This limitation is why bormeparser exists - to extract structured, machine-readable data from BORME PDF files.
+
+## Use Cases
+
+BORME data is valuable for:
+
+<CardGroup cols={2}>
+  <Card title="Due Diligence" icon="magnifying-glass">
+    Verify company status and corporate changes before business deals
+  </Card>
+  <Card title="Market Intelligence" icon="chart-line">
+    Track company formations, dissolutions, and market trends
+  </Card>
+  <Card title="Compliance" icon="shield-check">
+    Monitor corporate changes for regulatory compliance
+  </Card>
+  <Card title="Research" icon="flask">
+    Analyze business registry data for academic or economic research
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="File Formats" href="/concepts/file-formats" icon="file">
+    Learn about BORME's PDF, XML, and HTML formats
+  </Card>
+  <Card title="BORME Sections" href="/concepts/sections" icon="list">
+    Understand Sections A, B, and C
+  </Card>
+</CardGroup>

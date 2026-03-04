@@ -1,0 +1,532 @@
+---
+title: CARGO Enum
+description: Corporate positions and officer roles in Spanish companies
+---
+
+The `CARGO` class contains constants representing different corporate positions and officer roles that appear in BORME (Spanish Official Gazette of the Commercial Registry) filings.
+
+## Overview
+
+CARGO defines 400+ different corporate positions, from basic roles like President and Secretary to specialized positions in committees, boards, and special situations. It includes mappings from Spanish abbreviations to full position names.
+
+## Core Executive Positions
+
+### Board of Directors
+
+<ParamField path="PRESIDENTE" type="str" default="'Presidente'">
+  President/Chairperson
+</ParamField>
+
+<ParamField path="VICEPRESIDENTE" type="str" default="'Vicepresidente'">
+  Vice President
+</ParamField>
+
+<ParamField path="VICEPRESIDENTE_PRIMERO" type="str" default="'Vicepresidente primero'">
+  First Vice President
+</ParamField>
+
+<ParamField path="VICEPRESIDENTE_SEGUNDO" type="str" default="'Vicepresidente segundo'">
+  Second Vice President
+</ParamField>
+
+<ParamField path="VICEPRESIDENTE_TERCERO" type="str" default="'Vicepresidente tercero'">
+  Third Vice President
+</ParamField>
+
+<ParamField path="CONSEJERO" type="str" default="'Consejero'">
+  Board member/Director
+</ParamField>
+
+<ParamField path="CONSEJERO_DELEGADO" type="str" default="'Consejero delegado'">
+  Managing Director/CEO
+</ParamField>
+
+<ParamField path="CONSEJERO_EJECUTIVO" type="str" default="'Consejero ejecutivo'">
+  Executive Director
+</ParamField>
+
+<ParamField path="CONSEJERO_INDEPENDIENTE" type="str" default="'Consejero independiente'">
+  Independent Director
+</ParamField>
+
+<ParamField path="CONSEJERO_SUPLENTE" type="str" default="'Consejero suplente'">
+  Alternate Director
+</ParamField>
+
+<ParamField path="SECRETARIO" type="str" default="'Secretario'">
+  Secretary
+</ParamField>
+
+<ParamField path="SECRETARIO_NO_CONSEJERO" type="str" default="'Secretario no consejero'">
+  Non-board Secretary
+</ParamField>
+
+<ParamField path="VICESECRETARIO" type="str" default="'Vicesecretario'">
+  Vice Secretary
+</ParamField>
+
+<ParamField path="VICESECRETARIO_NO_CONSEJERO" type="str" default="'Vicesecretario no consejero'">
+  Non-board Vice Secretary
+</ParamField>
+
+### Administrators
+
+<ParamField path="ADMINISTRADOR_UNICO" type="str" default="'Administrador único'">
+  Sole Administrator
+</ParamField>
+
+<ParamField path="ADMINISTRADOR" type="str" default="'Administrador'">
+  Administrator
+</ParamField>
+
+<ParamField path="ADMINISTRADOR_SOLIDARIO" type="str" default="'Administrador solidario'">
+  Joint and Several Administrator
+</ParamField>
+
+<ParamField path="ADMINISTRADOR_MANCOMUNADO" type="str" default="'Administrador mancomunado'">
+  Joint Administrator (requires multiple signatures)
+</ParamField>
+
+<ParamField path="ADMINISTRADOR_CONJUNTO" type="str" default="'Administrador conjunto'">
+  Joint Administrator
+</ParamField>
+
+<ParamField path="ADMINISTRADOR_SUPLENTE" type="str" default="'Administrador suplente'">
+  Alternate Administrator
+</ParamField>
+
+<ParamField path="ADMINISTRADOR_JUDICIAL" type="str" default="'Administrador judicial'">
+  Court-appointed Administrator
+</ParamField>
+
+<ParamField path="ADM_CONCURS" type="str" default="'Administrador concurs.'">
+  Insolvency Administrator
+</ParamField>
+
+## Management Positions
+
+### Directors and Executives
+
+<ParamField path="DIRECTOR_GENERAL" type="str" default="'Director general'">
+  General Director/General Manager
+</ParamField>
+
+<ParamField path="DIRECTOR_GENERAL_ADJUNTO" type="str" default="'Director general adjunto'">
+  Assistant General Manager
+</ParamField>
+
+<ParamField path="DIRECTOR_EJECUTIVO" type="str" default="'Director ejecutivo'">
+  Executive Director
+</ParamField>
+
+<ParamField path="DIRECTOR_COMERCIAL" type="str" default="'Director comercial'">
+  Commercial Director
+</ParamField>
+
+<ParamField path="DIRECTOR_FINANCIERO" type="str" default="'Director financiero'">
+  Finance Director/CFO
+</ParamField>
+
+<ParamField path="DIRECTOR_OPERACIONES" type="str" default="'Director operaciones'">
+  Operations Director
+</ParamField>
+
+<ParamField path="DIRECTOR_RECURSOS_HUMANOS" type="str" default="'Director de Recursos Humanos'">
+  Human Resources Director
+</ParamField>
+
+<ParamField path="DIRECTOR_MARKETING" type="str" default="'Director de marketing'">
+  Marketing Director
+</ParamField>
+
+<ParamField path="GERENTE" type="str" default="'Gerente'">
+  Manager
+</ParamField>
+
+<ParamField path="GERENTE_ADJUNTO" type="str" default="'Gerente adjunto'">
+  Assistant Manager
+</ParamField>
+
+<ParamField path="SUBDIRECTOR_GENERAL" type="str" default="'Subdirector general'">
+  Deputy General Manager
+</ParamField>
+
+## Powers of Attorney
+
+<ParamField path="APODERADO" type="str" default="'Apoderado'">
+  Attorney-in-fact/Proxy holder
+</ParamField>
+
+<ParamField path="APODERADO_MANCOMUNADO" type="str" default="'Apoderado mancomunado'">
+  Joint Proxy (requires multiple signatures)
+</ParamField>
+
+<ParamField path="APODERADO_SOLIDARIO" type="str" default="'Apoderado solidario'">
+  Joint and Several Proxy
+</ParamField>
+
+<ParamField path="APODERADO_MANCOMUNADO_SOLIDARIO" type="str" default="'Apoderado mancomunado solidario'">
+  Joint and Several Proxy (combined)
+</ParamField>
+
+<ParamField path="APODERADO_CONJUNTO" type="str" default="'Apoderado conjunto'">
+  Joint Proxy
+</ParamField>
+
+<ParamField path="APODERADO_SUCURSAL" type="str" default="'Apoderado sucursal'">
+  Branch Proxy
+</ParamField>
+
+## Liquidators
+
+<ParamField path="LIQUIDADOR" type="str" default="'Liquidador'">
+  Liquidator
+</ParamField>
+
+<ParamField path="LIQUIDADOR_UNICO" type="str" default="'Liquidador único'">
+  Sole Liquidator
+</ParamField>
+
+<ParamField path="LIQUIDADOR_MANCOMUNADO" type="str" default="'Liquidador mancomunado'">
+  Joint Liquidator
+</ParamField>
+
+<ParamField path="LIQUISOLI" type="str" default="'Liquidador solidario'">
+  Joint and Several Liquidator
+</ParamField>
+
+<ParamField path="LIQUIDADOR_JUDICIAL" type="str" default="'Liquidador judicial'">
+  Court-appointed Liquidator
+</ParamField>
+
+## Auditors
+
+<ParamField path="AUDITOR" type="str" default="'Auditor'">
+  Auditor
+</ParamField>
+
+<ParamField path="AUDITOR_CUENTAS" type="str" default="'Auditor de cuentas'">
+  Accounts Auditor
+</ParamField>
+
+<ParamField path="AUDITOR_CUENTAS_CONSOLIDADAS" type="str" default="'Auditor de cuentas consolidadas'">
+  Consolidated Accounts Auditor
+</ParamField>
+
+<ParamField path="AUDITOR_SUPLENTE" type="str" default="'Auditor suplente'">
+  Alternate Auditor
+</ParamField>
+
+<ParamField path="AUDITOR_INDIVIDUAL" type="str" default="'Auditor individual'">
+  Individual Auditor
+</ParamField>
+
+## Committee Positions
+
+### Audit Committee
+
+<ParamField path="PRESIDENTE_COMIT_AUD" type="str" default="'Presidente del comité Aud.'">
+  Audit Committee Chair
+</ParamField>
+
+<ParamField path="SECRETARIO_COMIT_AUD" type="str" default="'Secretario del comité Aud.'">
+  Audit Committee Secretary
+</ParamField>
+
+<ParamField path="MIEMBRO_COMIT_AUD" type="str" default="'Miembro del comité Aud.'">
+  Audit Committee Member
+</ParamField>
+
+### Executive Committee
+
+<ParamField path="PRESIDENTE_COMISION_EJECUTIVA" type="str" default="'Presidente de la comisión ejecutiva'">
+  Executive Committee Chair
+</ParamField>
+
+<ParamField path="SECRETARIO_COMISION_EJECUTIVA" type="str" default="'Secretario de la comisión ejecutiva'">
+  Executive Committee Secretary
+</ParamField>
+
+<ParamField path="MIEMBRO_COMISION_EJECUTIVA" type="str" default="'Miembro de la comisión ejecutiva'">
+  Executive Committee Member
+</ParamField>
+
+### Appointments & Remuneration Committee
+
+<ParamField path="PRESIDENTE_COMITE_NOMBRAMIENTOS_Y_RETRIBUCIONES" type="str" default="'Presidente del comité de Nombramientos y Retribuciones'">
+  Appointments & Remuneration Committee Chair
+</ParamField>
+
+<ParamField path="SECRETARIO_COMITE_NOMBRAMIENTOS_Y_RETRIBUCIONES" type="str" default="'Secretario del comité de Nombramientos y Retribuciones'">
+  Appointments & Remuneration Committee Secretary
+</ParamField>
+
+<ParamField path="MIEMBRO_COMITE_NOMBRAMIENTOS_Y_RETRIBUCIONES" type="str" default="'Miembro del comité de Nombramientos y Retribuciones'">
+  Appointments & Remuneration Committee Member
+</ParamField>
+
+### Risk Committee
+
+<ParamField path="PRESIDENTE_COMISION_RIESGOS" type="str" default="'Presidente de la comisión de riesgos'">
+  Risk Committee Chair
+</ParamField>
+
+<ParamField path="CONSEJERO_COMISION_RIESGOS" type="str" default="'Consejero de la comisión de riesgos'">
+  Risk Committee Director
+</ParamField>
+
+<ParamField path="MIEMBRO_COMISION_RIESGOS" type="str" default="'Miembro de la comisión de riesgos'">
+  Risk Committee Member
+</ParamField>
+
+## Board Types
+
+### Board of Trustees (Consejo Rector)
+
+<ParamField path="PRESIDENTE_CONSEJO_RECTOR" type="str" default="'Presidente del consejo rector'">
+  Board of Trustees Chair
+</ParamField>
+
+<ParamField path="VICEPRESIDENTE_CONSEJO_RECTOR" type="str" default="'Vicepresidente del consejo rector'">
+  Board of Trustees Vice Chair
+</ParamField>
+
+<ParamField path="SECRETARIO_CONSEJO_RECTOR" type="str" default="'Secretario del consejo rector'">
+  Board of Trustees Secretary
+</ParamField>
+
+<ParamField path="MIEMBRO_CONSEJO_RECTOR" type="str" default="'Miembro del consejo rector'">
+  Board of Trustees Member
+</ParamField>
+
+### Board of Directors (Junta Directiva)
+
+<ParamField path="PRESIDENTE_JUNTA_DIRECTIVA" type="str" default="'Presidente de la Junta Directiva'">
+  Board of Directors Chair
+</ParamField>
+
+<ParamField path="SECRETARIO_JUNTA_DIRECTIVA" type="str" default="'Secretario de la Junta Directiva'">
+  Board of Directors Secretary
+</ParamField>
+
+<ParamField path="MIEMBRO_JUNTA_DIRECTIVA" type="str" default="'Miembro de la Junta Directiva'">
+  Board of Directors Member
+</ParamField>
+
+<ParamField path="VOCAL_JUNTA_DIRECTIVA" type="str" default="'Vocal de la Junta Directiva'">
+  Board of Directors Voting Member
+</ParamField>
+
+<ParamField path="TESORERO_JUNTA_DIRECTIVA" type="str" default="'Tesorero de la Junta Directiva'">
+  Board of Directors Treasurer
+</ParamField>
+
+## Other Positions
+
+<ParamField path="REPRESENTANTE" type="str" default="'Representante'">
+  Representative
+</ParamField>
+
+<ParamField path="SOCIO" type="str" default="'Socio'">
+  Partner
+</ParamField>
+
+<ParamField path="SOCIO_UNICO" type="str" default="'Socio único'">
+  Sole Partner
+</ParamField>
+
+<ParamField path="SOCIO_PROFESIONAL" type="str" default="'Socio profesional'">
+  Professional Partner
+</ParamField>
+
+<ParamField path="TESORERO" type="str" default="'Tesorero'">
+  Treasurer
+</ParamField>
+
+<ParamField path="INTERVENTOR" type="str" default="'Interventor'">
+  Comptroller/Auditor
+</ParamField>
+
+<ParamField path="COMISARIO" type="str" default="'Comisario'">
+  Commissioner
+</ParamField>
+
+## Keyword Mappings
+
+CARGO provides extensive mappings from Spanish abbreviations and variations to full position names:
+
+```python
+from bormeparser.cargo import CARGO
+
+# Access all keyword mappings
+keywords = CARGO.KEYWORDS
+
+print(len(keywords))  # 600+ variations
+```
+
+### Common Abbreviations
+
+| Abbreviation | Full Name | Constant |
+|--------------|-----------|----------|
+| Pdte. | Presidente | `PRESIDENTE` |
+| Vicepresid. | Vicepresidente | `VICEPRESIDENTE` |
+| Cons. | Consejero | `CONSEJERO` |
+| Adm. Unico | Administrador único | `ADMINISTRADOR_UNICO` |
+| Secr.Gral. | Secretario general | `SECRETARIO_GENERAL` |
+| Dir.General | Director general | `DIRECTOR_GENERAL` |
+
+## Usage Examples
+
+### Accessing Position Constants
+
+```python
+from bormeparser.cargo import CARGO
+
+# Access specific positions
+print(CARGO.PRESIDENTE)  # "Presidente"
+print(CARGO.CONSEJERO_DELEGADO)  # "Consejero delegado"
+print(CARGO.DIRECTOR_GENERAL)  # "Director general"
+```
+
+### Converting from Abbreviations
+
+```python
+from bormeparser.cargo import CARGO
+
+# Convert abbreviated forms to full positions
+abbreviation = "Pdte."
+if abbreviation in CARGO._keywords:
+    position = CARGO._keywords[abbreviation]
+    print(f"{abbreviation} = {position}")
+    # Output: Pdte. = Presidente
+
+# Using the from_string method
+try:
+    position = CARGO.from_string("Cons.Delegado")
+    print(position)  # "Consejero delegado"
+except BormeInvalidCargoException as e:
+    print(f"Unknown position: {e}")
+```
+
+### Filtering by Position Type
+
+```python
+from bormeparser import Borme
+from bormeparser.cargo import CARGO
+from bormeparser.acto import ACTO
+
+# Parse BORME file
+borme = Borme.from_json('borme.json')
+
+# Find all CEOs appointed
+for company in borme.get_companies():
+    acts = company.get_acts()
+    
+    if ACTO.NOMBRAMIENTOS in acts:
+        appointments = acts[ACTO.NOMBRAMIENTOS]
+        
+        for person, cargo in appointments:
+            if cargo == CARGO.CONSEJERO_DELEGADO:
+                print(f"{person} appointed as CEO of {company.name}")
+            elif cargo == CARGO.PRESIDENTE:
+                print(f"{person} appointed as President of {company.name}")
+```
+
+### Identifying Executive Positions
+
+```python
+from bormeparser.cargo import CARGO
+
+# Define executive positions
+executive_positions = [
+    CARGO.PRESIDENTE,
+    CARGO.CONSEJERO_DELEGADO,
+    CARGO.DIRECTOR_GENERAL,
+    CARGO.PRESIDENTE_EJECUTIVO
+]
+
+# Define board positions
+board_positions = [
+    CARGO.PRESIDENTE,
+    CARGO.VICEPRESIDENTE,
+    CARGO.CONSEJERO,
+    CARGO.SECRETARIO,
+    CARGO.VICESECRETARIO
+]
+
+# Check if a position is executive
+def is_executive(position):
+    return position in executive_positions
+
+# Check if a position is on the board
+def is_board_member(position):
+    return position in board_positions
+```
+
+### Complete Example
+
+```python
+from bormeparser import Borme
+from bormeparser.cargo import CARGO
+from bormeparser.acto import ACTO
+
+# Parse BORME
+borme = Borme.from_json('borme-2024-01-15.json')
+
+# Analyze corporate governance changes
+for company in borme.get_companies():
+    print(f"\n{company.name}")
+    print("=" * len(company.name))
+    
+    acts = company.get_acts()
+    
+    # Appointments
+    if ACTO.NOMBRAMIENTOS in acts:
+        print("\nNew appointments:")
+        for person, cargo in acts[ACTO.NOMBRAMIENTOS]:
+            print(f"  {person} - {cargo}")
+    
+    # Resignations
+    if ACTO.CESES_DIMISIONES in acts:
+        print("\nResignations:")
+        for person, cargo in acts[ACTO.CESES_DIMISIONES]:
+            print(f"  {person} - {cargo}")
+    
+    # Revocations
+    if ACTO.REVOCACIONES in acts:
+        print("\nRevocations:")
+        for person, cargo in acts[ACTO.REVOCACIONES]:
+            print(f"  {person} - {cargo}")
+```
+
+## Position Hierarchy
+
+Typical Spanish corporate governance structure:
+
+```
+Junta General de Accionistas (General Shareholders Meeting)
+  |
+  +-- Consejo de Administración (Board of Directors)
+      |
+      +-- Presidente (Chair)
+      +-- Vicepresidente (Vice Chair)
+      +-- Consejero Delegado (CEO/Managing Director)
+      +-- Consejeros (Directors)
+      +-- Secretario (Secretary)
+      |
+      +-- Comité de Auditoría (Audit Committee)
+      +-- Comité de Nombramientos y Retribuciones (Appointments & Remuneration)
+      +-- Comisión Ejecutiva (Executive Committee)
+      |
+      +-- Dirección General (Management)
+          |
+          +-- Director General (General Manager)
+          +-- Director Financiero (CFO)
+          +-- Director Comercial (Commercial Director)
+          +-- etc.
+```
+
+## Related
+
+- [ACTO enum](/api/acto) - BORME act types
+- [PROVINCIA enum](/api/provincia) - Spanish provinces

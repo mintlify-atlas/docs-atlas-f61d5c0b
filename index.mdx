@@ -1,97 +1,196 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+mode: custom
 ---
 
-## Setting up
+<div className="relative overflow-hidden bg-gradient-to-br from-[#1F2937] via-[#111827] to-[#0f1117] dark:from-[#1F2937] dark:via-[#111827] dark:to-[#0f1117]">
+  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djItMnptMC0ydi0yIDJ6bTItMmgyLTJ6bS0yIDBoLTIgMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-40"></div>
+  
+  <div className="relative max-w-7xl mx-auto px-6 sm:px-8 py-20 sm:py-24 lg:py-28">
+    <div className="text-center">
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+        Parse Spanish Business Registry Files
+      </h1>
+      <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+        A Python library for extracting company data from BORME (Boletín Oficial del Registro Mercantil) files. Download, parse, and convert official business registry documents to structured data.
+      </p>
+      
+      <div className="flex flex-wrap justify-center gap-4">
+        <a 
+          href="/quickstart" 
+          className="inline-flex items-center px-6 py-3 rounded-full bg-[#f05a00] hover:bg-[#D35A00] text-white font-semibold transition-colors no-underline"
+        >
+          Get Started
+          <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <a 
+          href="/api/borme" 
+          className="inline-flex items-center px-6 py-3 rounded-full border-2 border-white/30 bg-white/10 hover:bg-white/20 hover:border-white/50 text-white font-semibold transition-all no-underline"
+        >
+          API Reference
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Quick Start</h2>
+    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Get up and running with bormeparser in three simple steps
+    </p>
+  </div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+  <Steps>
+    <Step title="Install bormeparser">
+      Install the library using pip:
+      
+      ```bash
+      pip install bormeparser
+      ```
+      
+      <Note>
+        You may need to install system dependencies first:
+        ```bash
+        sudo apt-get install python3-dev libxslt1-dev libffi-dev zlib1g-dev gcc
+        ```
+      </Note>
+    </Step>
 
-## Make it yours
+    <Step title="Parse a BORME file">
+      Download and parse a BORME PDF file:
+      
+      ```python
+      import bormeparser
+      from datetime import date
 
-Design a docs site that looks great and empowers your users.
+      # Parse a local PDF file
+      borme = bormeparser.parse('BORME-A-2015-27-10.pdf', bormeparser.SECCION.A)
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      # Access parsed data
+      print(f"Date: {borme.date}")
+      print(f"Province: {borme.provincia}")
+      print(f"Number of companies: {len(borme.get_companies())}")
+      ```
+    </Step>
 
-## Create beautiful pages
+    <Step title="Extract and export data">
+      Extract company information and export to JSON:
+      
+      ```python
+      # Get all companies in the BORME
+      companies = borme.get_companies()
 
-Everything you need to create world-class documentation.
+      # Get acts for a specific company
+      for company in companies[:5]:
+          print(f"\n{company}:")
+          acts = borme.get_acts(company)
+          for act in acts:
+              print(f"  - {act}")
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+      # Export to JSON
+      borme.to_json('output.json')
+      ```
+      
+      <Accordion title="Example JSON output">
+        ```json
+        {
+          "date": "2015-02-10",
+          "provincia": "MADRID",
+          "seccion": "A",
+          "companies": {
+            "EXAMPLE COMPANY SL": [
+              {
+                "type": "Nombramientos",
+                "value": ["JOHN DOE"]
+              }
+            ]
+          }
+        }
+        ```
+      </Accordion>
+    </Step>
+  </Steps>
+</div>
 
-## Need inspiration?
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Key Features</h2>
+    <p className="text-lg text-gray-600 dark:text-gray-400">
+      Everything you need to work with Spanish business registry data
+    </p>
+  </div>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+  <CardGroup cols={2}>
+    <Card title="Parse PDF & XML Files" icon="file-pdf" href="/guides/parsing-files">
+      Extract structured data from BORME PDF and XML files using multiple parser backends (PyPDF2, lxml).
+    </Card>
+    <Card title="Download from Official Sources" icon="download" href="/guides/downloading-files">
+      Automatically download BORME files from boe.es for any date, province, or section.
+    </Card>
+    <Card title="Extract Company Data" icon="building" href="/guides/extracting-data">
+      Access company names, business acts, appointments, dissolutions, and registry information.
+    </Card>
+    <Card title="Convert to JSON" icon="code" href="/guides/converting-to-json">
+      Export parsed BORME data to JSON format for easy integration with other tools.
+    </Card>
+    <Card title="Multiple Provinces & Sections" icon="map-location-dot" href="/concepts/sections">
+      Support for all 52 Spanish provinces and three BORME sections (A, B, C).
+    </Card>
+    <Card title="Rich Data Models" icon="database" href="/api/acto">
+      Type-safe enums for business acts, positions, provinces, and sections.
+    </Card>
+  </CardGroup>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Explore the Documentation</h2>
+    <p className="text-lg text-gray-600 dark:text-gray-400">
+      Learn about BORME files and how to use bormeparser effectively
+    </p>
+  </div>
+
+  <CardGroup cols={3}>
+    <Card title="BORME Overview" icon="book-open" href="/concepts/borme-overview">
+      Learn what BORME is and why it matters
+    </Card>
+    <Card title="File Formats" icon="file-lines" href="/concepts/file-formats">
+      Understand PDF, XML, and HTML formats
+    </Card>
+    <Card title="Sections Explained" icon="layer-group" href="/concepts/sections">
+      Explore sections A, B, and C
+    </Card>
+    <Card title="Parsing Guide" icon="magnifying-glass" href="/guides/parsing-files">
+      Parse BORME files step-by-step
+    </Card>
+    <Card title="Download Guide" icon="cloud-arrow-down" href="/guides/downloading-files">
+      Download files programmatically
+    </Card>
+    <Card title="API Reference" icon="brackets-curly" href="/api/borme">
+      Complete API documentation
+    </Card>
+  </CardGroup>
+</div>
+
+<div className="mt-20 mb-16 max-w-5xl mx-auto px-6">
+  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f05a00] to-[#D35A00] p-12 text-center">
+    <div className="relative z-10">
+      <h2 className="text-3xl font-bold text-white mb-4">Ready to Get Started?</h2>
+      <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
+        Install bormeparser and start extracting Spanish business registry data in minutes
+      </p>
+      <a 
+        href="/installation" 
+        className="inline-flex items-center px-8 py-3 rounded-full bg-white text-[#f05a00] hover:bg-gray-100 font-semibold transition-colors no-underline"
+      >
+        View Installation Guide
+        <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>

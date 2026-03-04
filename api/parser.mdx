@@ -1,0 +1,322 @@
+---
+title: "parse()"
+description: "Parse BORME files from local paths or URLs"
+---
+
+## Overview
+
+The `parse()` function is the main entry point for parsing BORME documents. It automatically selects the appropriate parser backend based on the section type and handles both local files and remote URLs.
+
+## Function Signature
+
+```python
+def parse(data: str, seccion: str) -> Borme
+```
+
+<ParamField path="data" type="str" required>
+  Path to a local BORME file or HTTP(S) URL to download and parse.
+</ParamField>
+
+<ParamField path="seccion" type="str" required>
+  The BORME section type. Use constants from `bormeparser.SECCION`:
+  - `SECCION.A` - Acts and company operations
+  - `SECCION.C` - Notices and announcements
+</ParamField>
+
+<ResponseField name="return" type="Borme">
+  A parsed `Borme` object containing all announcements and metadata.
+</ResponseField>
+
+**Raises:** `IOError` if the file doesn't exist or the URL is invalid.
+
+## Parser Backends
+
+The `parse()` function uses different parser backends depending on the section:
+
+### DEFAULT_PARSER Configuration
+
+```python
+DEFAULT_PARSER = {
+    'A': ('bormeparser.backends.pypdf2.parser', 'PyPDF2Parser'),
+    'C': ('bormeparser.backends.seccion_c.lxml.parser', 'LxmlBormeCParser')
+}
+```
+
+<ResponseField name="A" type="tuple">
+  **PyPDF2Parser** - Parses section A BORMEs (PDF format) using PyPDF2 library.
+  
+  Module: `bormeparser.backends.pypdf2.parser`
+</ResponseField>
+
+<ResponseField name="C" type="tuple">
+  **LxmlBormeCParser** - Parses section C BORMEs (XML/HTML format) using lxml.
+  
+  Module: `bormeparser.backends.seccion_c.lxml.parser`
+</ResponseField>
+
+### PyPDF2Parser
+
+Used for section A documents (PDF format). Extracts structured data from BORME PDFs including:
+- Company announcements with IDs
+- Commercial acts (constitution, appointments, dissolutions, etc.)
+- Registry information
+- Company positions and names
+
+**Constructor:**
+```python
+PyPDF2Parser(filename: str, log_level=logging.WARN)
+```
+
+### LxmlBormeCParser
+
+Used for section C documents (XML/HTML format). Parses announcement notices including:
+- Company meetings (juntas)
+- Mergers and acquisitions
+- Related companies
+- Document metadata
+
+**Constructor:**
+```python
+LxmlBormeCParser(filename: str, log_level=logging.WARN)
+```
+
+## Usage Examples
+
+### Parse a local file
+
+```python
+from bormeparser import parse
+from bormeparser import SECCION
+
+# Parse a section A BORME (PDF)
+borme = parse('BORME-A-2015-102-29.pdf', SECCION.A)
+
+print(f"Parsed BORME from {borme.date}")
+print(f"Province: {borme.provincia}")
+print(f"Announcements: {len(borme.anuncios)}")
+```
+
+### Parse from URL
+
+```python
+from bormeparser import parse, SECCION
+
+# Parse directly from URL
+url = 'http://www.boe.es/borme/dias/2015/06/02/pdfs/BORME-A-2015-102-29.pdf'
+borme = parse(url, SECCION.A)
+
+# Access parsed data
+for anuncio_id in borme.get_anuncios_ids():
+    anuncio = borme.get_anuncio(anuncio_id)
+    print(f"{anuncio.id}: {anuncio.empresa}")
+```
+
+### Parse section C (XML format)
+
+```python
+from bormeparser import parse, SECCION
+
+# Parse section C BORME
+borme_c = parse('BORME-C-2011-20488.xml', SECCION.C)
+
+# Section C has different structure
+print(f"Department: {borme_c.departamento}")
+print(f"Company: {borme_c.empresa}")
+print(f"Related companies: {borme_c.empresas_relacionadas}")
+```
+
+### Complete workflow with download and parse
+
+```python
+from bormeparser import download_pdf, parse
+from bormeparser import SECCION, PROVINCIA
+import datetime
+
+# Download and parse in one step
+date = datetime.date(2015, 6, 2)
+filename = '/tmp/borme.pdf'
+
+# download_pdf can also parse automatically
+borme = download_pdf(
+    date=date,
+    filename=filename,
+    seccion=SECCION.A,
+    provincia=PROVINCIA.MALAGA,
+    parse=True  # Automatically parses after download
+)
+
+# Or download then parse separately
+download_pdf(date, filename, SECCION.A, PROVINCIA.MALAGA)
+borme = parse(filename, SECCION.A)
+```
+
+### Extract company acts
+
+```python
+from bormeparser import parse, SECCION
+
+borme = parse('BORME-A-2015-102-29.pdf', SECCION.A)
+
+for anuncio in borme.get_anuncios():
+    print(f"\nCompany: {anuncio.empresa}")
+    print(f"Registry: {anuncio.registro}")
+    
+    # Get all acts for this announcement
+    for acto in anuncio.get_borme_actos():
+        print(f"  {acto.name}: {acto.value}")
+        
+        # Check if it's a cargo (position) act
+        if hasattr(acto, 'cargos'):
+            for cargo, names in acto.cargos.items():
+                print(f"    {cargo}: {', '.join(names)}")
+```
+
+### Export parsed data
+
+```python
+from bormeparser import parse, SECCION
+
+# Parse BORME
+borme = parse('BORME-A-2015-102-29.pdf', SECCION.A)
+
+# Export to JSON
+json_path = borme.to_json(
+    path='/tmp/output.json',
+    pretty=True,
+    include_url=True
+)
+
+print(f"Exported to {json_path}")
+
+# Later, load from JSON without re-parsing
+from bormeparser.borme import Borme
+borme_loaded = Borme.from_json(json_path)
+```
+
+## Error Handling
+
+```python
+from bormeparser import parse, SECCION
+from bormeparser.exceptions import BormeDoesntExistException
+import os
+
+def safe_parse(filepath, seccion):
+    """Safely parse a BORME file with error handling"""
+    try:
+        if not os.path.isfile(filepath):
+            raise IOError(f"File not found: {filepath}")
+        
+        borme = parse(filepath, seccion)
+        return borme
+        
+    except IOError as e:
+        print(f"Error reading file: {e}")
+        return None
+    except BormeDoesntExistException as e:
+        print(f"Invalid BORME format: {e}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return None
+
+# Usage
+borme = safe_parse('BORME-A-2015-102-29.pdf', SECCION.A)
+if borme:
+    print(f"Successfully parsed {len(borme.anuncios)} announcements")
+```
+
+## Advanced Usage
+
+### Using parser backends directly
+
+```python
+from bormeparser.backends.pypdf2.parser import PyPDF2Parser
+import logging
+
+# Use parser with debug logging
+parser = PyPDF2Parser('BORME-A-2015-102-29.pdf', log_level=logging.DEBUG)
+borme = parser.parse()
+
+print(f"Parsed {len(borme.anuncios)} announcements")
+```
+
+### Custom parser selection
+
+```python
+import importlib
+from bormeparser.parser import DEFAULT_PARSER
+
+def parse_with_backend(filename, seccion):
+    """Parse using the default backend for the section"""
+    # Get the parser module and class name
+    module_name, class_name = DEFAULT_PARSER[seccion]
+    
+    # Import the module dynamically
+    module = importlib.import_module(module_name)
+    parser_class = getattr(module, class_name)
+    
+    # Create parser instance and parse
+    parser = parser_class(filename)
+    return parser.parse()
+
+# Use custom parsing function
+borme = parse_with_backend('BORME-A-2015-102-29.pdf', 'A')
+```
+
+## Performance Considerations
+
+<Tip>
+  Parsing large BORME PDFs can be resource-intensive. For bulk processing, consider:
+  - Processing files in batches
+  - Using multiprocessing for parallel parsing
+  - Caching parsed results as JSON
+  - Filtering announcements before processing
+</Tip>
+
+### Batch processing example
+
+```python
+from bormeparser import parse, SECCION
+from pathlib import Path
+import json
+
+def batch_parse_to_json(directory, seccion):
+    """Parse all BORME files in a directory and export to JSON"""
+    borme_files = Path(directory).glob('BORME-*.pdf')
+    
+    results = []
+    for filepath in borme_files:
+        try:
+            borme = parse(str(filepath), seccion)
+            json_path = borme.to_json(
+                path=str(filepath).replace('.pdf', '.json'),
+                pretty=False  # Compact JSON for storage
+            )
+            results.append({
+                'file': filepath.name,
+                'status': 'success',
+                'json': json_path,
+                'announcements': len(borme.anuncios)
+            })
+        except Exception as e:
+            results.append({
+                'file': filepath.name,
+                'status': 'error',
+                'error': str(e)
+            })
+    
+    return results
+
+# Process all BORMEs in directory
+results = batch_parse_to_json('/tmp/borme_pdfs', SECCION.A)
+
+# Print summary
+successful = sum(1 for r in results if r['status'] == 'success')
+print(f"Parsed {successful}/{len(results)} files successfully")
+```
+
+## See Also
+
+- [Borme class](/api/borme) - Working with parsed BORME objects
+- [BormeXML class](/api/borme#bormexml) - Downloading and listing available BORMEs
+- [Download functions](/api/download) - Helper functions for downloading BORMEs

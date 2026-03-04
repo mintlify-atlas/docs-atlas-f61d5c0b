@@ -1,0 +1,342 @@
+---
+title: Downloading BORME Files
+description: Learn how to download BORME PDF and XML files from the official BOE website
+---
+
+# Downloading BORME Files
+
+bormeparser provides convenient functions to download BORME files directly from the official BOE (Boletín Oficial del Estado) website.
+
+## Quick Start
+
+```python
+import bormeparser
+import datetime
+
+# Download a single PDF file
+date = datetime.date(2015, 6, 1)
+bormeparser.download_pdf(
+    date=date,
+    filename='BORME-A-2015-101-29.pdf',
+    seccion=bormeparser.SECCION.A,
+    provincia=bormeparser.PROVINCIA.MALAGA
+)
+```
+
+## Downloading a Single PDF
+
+Use `download_pdf()` to download a single BORME PDF file for a specific date, section, and province:
+
+### Function Signature
+
+```python
+download_pdf(date, filename, seccion, provincia, parse=False)
+```
+
+### Parameters
+
+- `date`: `datetime.date` object or tuple `(year, month, day)`
+- `filename`: Path where the file will be saved
+- `seccion`: `SECCION.A` or `SECCION.B`
+- `provincia`: A `PROVINCIA` constant (e.g., `PROVINCIA.MADRID`)
+- `parse`: If `True`, automatically parse the file after downloading (default: `False`)
+
+### Examples
+
+<Steps>
+  <Step title="Download with datetime.date">
+    ```python
+    import bormeparser
+    import datetime
+    
+    date = datetime.date(2015, 6, 1)
+    bormeparser.download_pdf(
+        date=date,
+        filename='downloads/BORME-A-2015-101-29.pdf',
+        seccion=bormeparser.SECCION.A,
+        provincia=bormeparser.PROVINCIA.MALAGA
+    )
+    ```
+  </Step>
+  
+  <Step title="Download with tuple date">
+    ```python
+    import bormeparser
+    
+    # Use tuple: (year, month, day)
+    bormeparser.download_pdf(
+        date=(2015, 6, 1),
+        filename='BORME-A-2015-101-28.pdf',
+        seccion='A',
+        provincia=bormeparser.PROVINCIA.MADRID
+    )
+    ```
+  </Step>
+  
+  <Step title="Download and parse automatically">
+    ```python
+    import bormeparser
+    
+    # Set parse=True to automatically parse after download
+    borme = bormeparser.download_pdf(
+        date=(2015, 6, 1),
+        filename='BORME-A-2015-101-29.pdf',
+        seccion=bormeparser.SECCION.A,
+        provincia=bormeparser.PROVINCIA.MALAGA,
+        parse=True  # Returns Borme object instead of boolean
+    )
+    
+    if borme:
+        print(f'Downloaded and parsed {len(borme.get_anuncios())} announcements')
+    ```
+  </Step>
+</Steps>
+
+## Downloading Multiple PDFs
+
+Use `download_pdfs()` to download multiple BORME files at once:
+
+### Function Signature
+
+```python
+download_pdfs(date, path, provincia=None, seccion=None, secure=True)
+```
+
+### Parameters
+
+- `date`: `datetime.date` object or tuple
+- `path`: Directory where files will be saved
+- `provincia`: Download files for a specific province (optional)
+- `seccion`: Download files for a specific section (optional)
+- `secure`: Use HTTPS (default: `True`)
+
+### Examples
+
+<Steps>
+  <Step title="Download all files for a section">
+    ```python
+    import bormeparser
+    import datetime
+    
+    date = datetime.date(2015, 6, 1)
+    success, files = bormeparser.download_pdfs(
+        date=date,
+        path='downloads/',
+        seccion=bormeparser.SECCION.A
+    )
+    
+    print(f'Downloaded {len(files)} files')
+    for file in files:
+        print(f'  - {file}')
+    ```
+  </Step>
+  
+  <Step title="Download files for a specific province">
+    ```python
+    import bormeparser
+    
+    # Download all sections for Barcelona
+    success, files = bormeparser.download_pdfs(
+        date=(2015, 6, 1),
+        path='downloads/',
+        provincia=bormeparser.PROVINCIA.BARCELONA
+    )
+    ```
+  </Step>
+</Steps>
+
+## Downloading XML Files
+
+Download the XML summary file that contains metadata and URLs for all BORME files of a given date:
+
+```python
+import bormeparser
+import datetime
+
+date = datetime.date(2015, 6, 1)
+bormeparser.download_xml(
+    date=date,
+    filename='BORME-S-20150601.xml'
+)
+```
+
+### Working with BormeXML
+
+The XML file contains URLs for all BORME PDFs. You can use the `BormeXML` class to work with it:
+
+```python
+from bormeparser.borme import BormeXML
+import datetime
+
+# Load from file
+bxml = BormeXML.from_file('BORME-S-20150601.xml')
+
+# Or fetch directly from date
+bxml = BormeXML.from_date(datetime.date(2015, 6, 1))
+
+# Get available provinces for Section A
+provincias = bxml.get_provincias(seccion='A')
+print(provincias)
+
+# Get URLs for all PDFs in Section A
+urls = bxml.get_url_pdfs(seccion='A')
+for provincia, url in urls.items():
+    print(f'{provincia}: {url}')
+
+# Download all files for Section A
+success, files = bxml.download_borme(path='downloads/', seccion='A')
+```
+
+## Getting Download URLs
+
+You can retrieve download URLs without actually downloading the files:
+
+### Get URL for a single PDF
+
+```python
+import bormeparser
+import datetime
+
+date = datetime.date(2015, 6, 1)
+url = bormeparser.get_url_pdf(
+    date=date,
+    seccion=bormeparser.SECCION.A,
+    provincia=bormeparser.PROVINCIA.MADRID
+)
+
+print(url)
+# https://boe.es/borme/dias/2015/06/01/pdfs/BORME-A-2015-101-28.pdf
+```
+
+<Note>
+  `get_url_pdf()` requires an internet connection to fetch the BORME number (nbo) from the XML file.
+</Note>
+
+### Get URLs for multiple PDFs
+
+```python
+import bormeparser
+import datetime
+
+# Get all URLs for Section A on a specific date
+urls = bormeparser.get_url_pdfs(
+    date=datetime.date(2015, 6, 1),
+    seccion=bormeparser.SECCION.A
+)
+
+# Returns a dictionary: {provincia: url}
+for provincia, url in urls.items():
+    print(f'{provincia}: {url}')
+```
+
+### Get XML URL
+
+```python
+import bormeparser
+import datetime
+
+url = bormeparser.get_url_xml(date=datetime.date(2015, 6, 1))
+print(url)
+# https://www.boe.es/diario_borme/xml.php?id=BORME-S-20150601
+```
+
+## URL Patterns
+
+bormeparser uses these URL patterns to download files:
+
+```python
+# PDF files (Sections A & B)
+# https://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-{seccion}-{year}-{nbo}-{provincia}.pdf
+
+# XML summary file
+# https://www.boe.es/diario_borme/xml.php?id=BORME-S-{year}{month:02d}{day:02d}
+
+# Section C XML files
+# https://www.boe.es/diario_borme/xml.php?id=BORME-C-{year}-{anuncio}
+
+# Section C PDF files
+# https://boe.es/borme/dias/{year}/{month:02d}/{day:02d}/pdfs/BORME-C-{year}-{anuncio}.pdf
+```
+
+## Province Constants
+
+Use the `PROVINCIA` class to specify provinces:
+
+```python
+from bormeparser import PROVINCIA
+
+# Major provinces
+PROVINCIA.MADRID        # Madrid
+PROVINCIA.BARCELONA     # Barcelona
+PROVINCIA.VALENCIA      # Valencia
+PROVINCIA.SEVILLA       # Sevilla
+PROVINCIA.MALAGA        # Málaga
+PROVINCIA.BILBAO        # Vizcaya
+
+# All provinces available
+PROVINCIA.ALAVA         # Álava
+PROVINCIA.ALBACETE      # Albacete
+PROVINCIA.ALICANTE      # Alicante
+PROVINCIA.ALMERIA       # Almería
+# ... and 48 more provinces
+```
+
+## Advanced Example
+
+Download multiple files with error handling:
+
+```python
+import bormeparser
+from bormeparser.exceptions import BormeDoesntExistException
+from bormeparser.borme import BormeXML
+import datetime
+import os
+
+def download_borme_range(start_date, end_date, output_dir, seccion):
+    """Download BORME files for a date range"""
+    current_date = start_date
+    total_downloaded = 0
+    
+    while current_date <= end_date:
+        try:
+            # Create output directory
+            date_path = os.path.join(output_dir, current_date.isoformat())
+            os.makedirs(date_path, exist_ok=True)
+            
+            # Download using BormeXML
+            bxml = BormeXML.from_date(current_date)
+            success, files = bxml.download_borme(
+                path=date_path,
+                seccion=seccion
+            )
+            
+            print(f'{current_date}: Downloaded {len(files)} files')
+            total_downloaded += len(files)
+            
+            # Move to next BORME date
+            current_date = bxml.next_borme
+            if not current_date:
+                break
+                
+        except BormeDoesntExistException:
+            print(f'{current_date}: No BORME published')
+            current_date += datetime.timedelta(days=1)
+        except Exception as e:
+            print(f'{current_date}: Error - {e}')
+            current_date += datetime.timedelta(days=1)
+    
+    print(f'Total files downloaded: {total_downloaded}')
+
+# Usage
+start = datetime.date(2015, 6, 1)
+end = datetime.date(2015, 6, 30)
+download_borme_range(start, end, 'downloads/', bormeparser.SECCION.A)
+```
+
+## Next Steps
+
+After downloading files, you can:
+
+- [Parse the downloaded files](/guides/parsing-files) to extract data
+- [Extract company information](/guides/extracting-data) from parsed BORME objects
+- [Convert to JSON](/guides/converting-to-json) for data analysis

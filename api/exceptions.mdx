@@ -1,0 +1,318 @@
+---
+title: 'Exceptions'
+description: 'Exception classes for error handling in bormeparser'
+---
+
+## Overview
+
+The `bormeparser.exceptions` module defines custom exception classes for handling various error conditions when working with BORME data. All exceptions inherit from the base `BormeparserException` class.
+
+---
+
+## Exception Hierarchy
+
+```
+BormeparserException (base)
+├── BormeIOErrorException (also inherits from IOError)
+├── BormeDoesntExistException
+├── BormeAlreadyDownloadedException
+├── BormeInvalidActoException
+├── BormeInvalidCargoException
+└── BormeAnuncioNotFound
+```
+
+---
+
+## BormeparserException
+
+Base exception class for all bormeparser-specific exceptions.
+
+```python
+class BormeparserException(Exception):
+    pass
+```
+
+### Usage
+
+This is the base exception that all other bormeparser exceptions inherit from. You can catch this to handle any bormeparser-related error.
+
+```python
+from bormeparser.exceptions import BormeparserException
+
+try:
+    # Some bormeparser operation
+    borme.download()
+except BormeparserException as e:
+    print(f"A bormeparser error occurred: {e}")
+```
+
+---
+
+## BormeIOErrorException
+
+Raised when an I/O error occurs while reading or writing BORME files.
+
+```python
+class BormeIOErrorException(BormeparserException, IOError):
+    pass
+```
+
+### When it's raised
+
+- File system errors when reading BORME XML or PDF files
+- Permission errors when accessing BORME directories
+- Disk I/O failures
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeIOErrorException
+import datetime
+from bormeparser import Borme
+
+try:
+    date = datetime.date(2024, 3, 15)
+    borme = Borme.from_xml('/invalid/path/file.xml')
+except BormeIOErrorException as e:
+    print(f"File I/O error: {e}")
+    # Handle the error (e.g., check file permissions, verify path)
+```
+
+---
+
+## BormeDoesntExistException
+
+Raised when attempting to access a BORME publication that doesn't exist.
+
+```python
+class BormeDoesntExistException(BormeparserException):
+    pass
+```
+
+### When it's raised
+
+- Requesting a BORME for a date when no publication was issued (e.g., weekends, holidays)
+- Accessing BORME data for dates before the system started publishing
+- Invalid date ranges
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeDoesntExistException
+import datetime
+from bormeparser import Borme
+
+try:
+    # Trying to get a BORME for a Sunday (no publications on weekends)
+    date = datetime.date(2024, 3, 17)  # A Sunday
+    borme = Borme.from_date(date)
+except BormeDoesntExistException as e:
+    print(f"BORME doesn't exist for this date: {e}")
+    # Handle the error (e.g., skip to next business day)
+```
+
+---
+
+## BormeAlreadyDownloadedException
+
+Raised when attempting to download a BORME file that has already been downloaded.
+
+```python
+class BormeAlreadyDownloadedException(BormeparserException):
+    pass
+```
+
+### When it's raised
+
+- Calling download methods when the file already exists locally
+- Duplicate download attempts
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeAlreadyDownloadedException
+import datetime
+from bormeparser import Borme
+
+try:
+    date = datetime.date(2024, 3, 15)
+    borme = Borme.from_date(date)
+    borme.download()  # First download
+    borme.download()  # Second attempt - will raise exception
+except BormeAlreadyDownloadedException as e:
+    print(f"File already downloaded: {e}")
+    # Handle the error (e.g., skip download, use existing file)
+```
+
+---
+
+## BormeInvalidActoException
+
+Raised when an invalid or unrecognized acto (action/event type) is encountered.
+
+```python
+class BormeInvalidActoException(BormeparserException):
+    pass
+```
+
+### When it's raised
+
+- Processing BORME data with unknown acto types
+- Malformed acto names in BORME publications
+- Attempting to filter by non-existent acto types
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeInvalidActoException
+from bormeparser import Borme
+
+try:
+    borme = Borme.from_date(datetime.date(2024, 3, 15))
+    # Attempting to access an invalid acto
+    actos = borme.get_actos_by_type('INVALID_ACTO_TYPE')
+except BormeInvalidActoException as e:
+    print(f"Invalid acto type: {e}")
+    # Handle the error (e.g., use valid acto types, log warning)
+```
+
+---
+
+## BormeInvalidCargoException
+
+Raised when an invalid or unrecognized cargo (position/role) is encountered.
+
+```python
+class BormeInvalidCargoException(BormeparserException):
+    pass
+```
+
+### When it's raised
+
+- Processing BORME data with unknown cargo types
+- Malformed cargo names in BORME publications
+- Attempting to filter by non-existent cargo types
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeInvalidCargoException
+from bormeparser import Borme
+
+try:
+    borme = Borme.from_date(datetime.date(2024, 3, 15))
+    # Attempting to access an invalid cargo
+    positions = borme.get_persons_by_cargo('INVALID_CARGO')
+except BormeInvalidCargoException as e:
+    print(f"Invalid cargo type: {e}")
+    # Handle the error (e.g., use valid cargo types, validate input)
+```
+
+---
+
+## BormeAnuncioNotFound
+
+Raised when a specific BORME anuncio (announcement) cannot be found.
+
+```python
+class BormeAnuncioNotFound(BormeparserException):
+    pass
+```
+
+### When it's raised
+
+- Searching for a non-existent announcement ID
+- Accessing announcements that have been removed or are not in the dataset
+- Invalid announcement references
+
+### Example
+
+```python
+from bormeparser.exceptions import BormeAnuncioNotFound
+from bormeparser import Borme
+
+try:
+    borme = Borme.from_date(datetime.date(2024, 3, 15))
+    # Attempting to get a non-existent announcement
+    anuncio = borme.get_anuncio(999999)
+except BormeAnuncioNotFound as e:
+    print(f"Announcement not found: {e}")
+    # Handle the error (e.g., validate ID, search differently)
+```
+
+---
+
+## Error Handling Best Practices
+
+### Catch Specific Exceptions
+
+Always catch the most specific exception first, then fall back to broader exceptions.
+
+```python
+from bormeparser.exceptions import (
+    BormeDoesntExistException,
+    BormeAlreadyDownloadedException,
+    BormeparserException
+)
+import datetime
+from bormeparser import Borme
+
+try:
+    date = datetime.date(2024, 3, 15)
+    borme = Borme.from_date(date)
+    borme.download()
+    borme.parse()
+except BormeDoesntExistException:
+    print("No BORME publication for this date")
+except BormeAlreadyDownloadedException:
+    print("BORME already downloaded, using cached version")
+except BormeparserException as e:
+    print(f"An unexpected bormeparser error occurred: {e}")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+```
+
+### Graceful Degradation
+
+Handle exceptions gracefully to provide a better user experience.
+
+```python
+from bormeparser.exceptions import BormeDoesntExistException
+import datetime
+from bormeparser import Borme
+
+def get_borme_safe(date):
+    """Safely retrieve BORME, returning None if it doesn't exist."""
+    try:
+        return Borme.from_date(date)
+    except BormeDoesntExistException:
+        return None
+
+date = datetime.date(2024, 3, 17)  # A Sunday
+borme = get_borme_safe(date)
+if borme is None:
+    print("No BORME available for this date")
+else:
+    # Process the BORME
+    borme.parse()
+```
+
+### Multiple Exception Types
+
+Handle multiple related exceptions together when appropriate.
+
+```python
+from bormeparser.exceptions import (
+    BormeInvalidActoException,
+    BormeInvalidCargoException
+)
+from bormeparser import Borme
+
+try:
+    borme = Borme.from_date(datetime.date(2024, 3, 15))
+    # Some operation that might raise validation errors
+    process_borme_data(borme)
+except (BormeInvalidActoException, BormeInvalidCargoException) as e:
+    print(f"Invalid BORME data encountered: {e}")
+    # Log the error for investigation
+```

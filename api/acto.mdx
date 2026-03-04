@@ -1,0 +1,385 @@
+---
+title: ACTO Enum
+description: BORME act types and administrative actions
+---
+
+The `ACTO` class contains constants representing different types of acts and administrative actions that can appear in BORME (Spanish Official Gazette of the Commercial Registry) filings.
+
+## Overview
+
+ACTO defines 57+ different types of business registry acts, from appointments and revocations to mergers and dissolutions. Each act type is represented by an integer constant and can be referenced using Spanish keywords.
+
+## Act Type Constants
+
+### Corporate Governance
+
+<ParamField path="NOMBRAMIENTOS" type="int" default="1">
+  Appointments of company officers
+</ParamField>
+
+<ParamField path="REVOCACIONES" type="int" default="2">
+  Revocations of appointments
+</ParamField>
+
+<ParamField path="CESES_DIMISIONES" type="int" default="3">
+  Resignations and dismissals
+</ParamField>
+
+<ParamField path="REELECCIONES" type="int" default="11">
+  Re-elections of officers
+</ParamField>
+
+<ParamField path="CANCELACIONES_DE_OFICIO_DE_NOMBRAMIENTOS" type="int" default="21">
+  Official cancellations of appointments
+</ParamField>
+
+### Corporate Structure
+
+<ParamField path="CONSTITUCION" type="int" default="12">
+  Company formation/incorporation
+</ParamField>
+
+<ParamField path="MODIFICACIONES_ESTATUTARIAS" type="int" default="4">
+  Statutory modifications
+</ParamField>
+
+<ParamField path="CAMBIO_DE_OBJETO_SOCIAL" type="int" default="5">
+  Change of corporate purpose
+</ParamField>
+
+<ParamField path="CAMBIO_DE_DENOMINACION_SOCIAL" type="int" default="6">
+  Change of company name
+</ParamField>
+
+<ParamField path="CAMBIO_DE_DOMICILIO_SOCIAL" type="int" default="7">
+  Change of registered address
+</ParamField>
+
+<ParamField path="AMPLIACION_DEL_OBJETO_SOCIAL" type="int" default="8">
+  Extension of corporate purpose
+</ParamField>
+
+<ParamField path="TRANSFORMACION_DE_SOCIEDAD" type="int" default="20">
+  Company transformation
+</ParamField>
+
+<ParamField path="MODIFICACION_DE_DURACION" type="int" default="49">
+  Modification of company duration
+</ParamField>
+
+### Ownership
+
+<ParamField path="SOCIEDAD_UNIPERSONAL" type="int" default="9">
+  Single-shareholder company
+</ParamField>
+
+<ParamField path="DECLARACION_DE_UNIPERSONALIDAD" type="int" default="27">
+  Declaration of single ownership
+</ParamField>
+
+<ParamField path="PERDIDA_DEL_CARACTER_DE_UNIPERSONALIDAD" type="int" default="28">
+  Loss of single-shareholder status
+</ParamField>
+
+### Capital Operations
+
+<ParamField path="AMPLIACION_DE_CAPITAL" type="int" default="15">
+  Capital increase
+</ParamField>
+
+<ParamField path="REDUCCION_DE_CAPITAL" type="int" default="16">
+  Capital reduction
+</ParamField>
+
+<ParamField path="DESEMBOLSO_DE_DIVIDENDOS_PASIVOS" type="int" default="22">
+  Payment of outstanding dividends
+</ParamField>
+
+<ParamField path="EMISION_OBLIGACIONES" type="int" default="38">
+  Bond issuance
+</ParamField>
+
+<ParamField path="ACUERDO_AMPLIACION_CAPITAL_SOCIAL_SIN_EJECUTAR" type="int" default="48">
+  Agreement to increase capital (not yet executed)
+</ParamField>
+
+### Mergers and Acquisitions
+
+<ParamField path="FUSION_POR_ABSORCION" type="int" default="18">
+  Merger by absorption
+</ParamField>
+
+<ParamField path="FUSION_UNION" type="int" default="42">
+  Merger by union
+</ParamField>
+
+<ParamField path="ESCISION_PARCIAL" type="int" default="40">
+  Partial spin-off
+</ParamField>
+
+<ParamField path="ESCISION_TOTAL" type="int" default="41">
+  Total spin-off
+</ParamField>
+
+<ParamField path="CESION_GLOBAL_ACTIVO_PASIVO" type="int" default="46">
+  Global transfer of assets and liabilities
+</ParamField>
+
+<ParamField path="SEGREGACION" type="int" default="47">
+  Segregation
+</ParamField>
+
+### Insolvency and Dissolution
+
+<ParamField path="SITUACION_CONCURSAL" type="int" default="17">
+  Insolvency situation
+</ParamField>
+
+<ParamField path="SUSPENSION_DE_PAGOS" type="int" default="19">
+  Suspension of payments
+</ParamField>
+
+<ParamField path="QUIEBRA" type="int" default="44">
+  Bankruptcy
+</ParamField>
+
+<ParamField path="DISOLUCION" type="int" default="10">
+  Dissolution
+</ParamField>
+
+<ParamField path="EXTINCION" type="int" default="26">
+  Extinction
+</ParamField>
+
+### Branch Operations
+
+<ParamField path="APERTURA_DE_SUCURSAL" type="int" default="50">
+  Branch opening
+</ParamField>
+
+<ParamField path="SUCURSAL" type="int" default="45">
+  Branch
+</ParamField>
+
+<ParamField path="CIERRE_SUCURSAL" type="int" default="55">
+  Branch closure
+</ParamField>
+
+<ParamField path="PRIMERA_SUCURSAL_DE_SOCIEDAD_EXTRANJERA" type="int" default="24">
+  First branch of foreign company
+</ParamField>
+
+### Registry Operations
+
+<ParamField path="PRIMERA_INSCRIPCION" type="int" default="52">
+  First registration
+</ParamField>
+
+<ParamField path="REAPERTURA_HOJA_REGISTRAL" type="int" default="29">
+  Reopening of registry sheet
+</ParamField>
+
+<ParamField path="CIERRE_PROVISIONAL_BAJA_EN_EL_INDICE_DE_ENTIDADES_JURIDICAS" type="int" default="31">
+  Provisional closure - removal from legal entities index
+</ParamField>
+
+<ParamField path="CIERRE_PROVISIONAL_REVOCACION_NIF" type="int" default="32">
+  Provisional closure - NIF revocation
+</ParamField>
+
+<ParamField path="CIERRE_PROVISIONAL_IMPUESTO_SOCIEDADES" type="int" default="51">
+  Provisional closure - corporate tax
+</ParamField>
+
+<ParamField path="REACTIVACION_DE_LA_SOCIEDAD" type="int" default="32">
+  Company reactivation
+</ParamField>
+
+### Other Acts
+
+<ParamField path="ARTICULO_378_5_DEL_RRM" type="int" default="13">
+  Article 378.5 of the Commercial Registry Regulation
+</ParamField>
+
+<ParamField path="OTROS_CONCEPTOS" type="int" default="14">
+  Other concepts
+</ParamField>
+
+<ParamField path="MODIFICACION_PODERES" type="int" default="39">
+  Modification of powers
+</ParamField>
+
+<ParamField path="PAGINA_WEB_DE_LA_SOCIEDAD" type="int" default="23">
+  Company website
+</ParamField>
+
+<ParamField path="ADAPTACION_LEY_2_95" type="int" default="30">
+  Adaptation to Law 2/95
+</ParamField>
+
+<ParamField path="ADAPTACION_DE_LA_SOCIEDAD" type="int" default="43">
+  Company adaptation
+</ParamField>
+
+<ParamField path="ADAPTACION_LEY_44_2015" type="int" default="56">
+  Adaptation to Law 44/2015
+</ParamField>
+
+<ParamField path="FE_DE_ERRATAS" type="int" default="34">
+  Errata correction
+</ParamField>
+
+<ParamField path="DATOS_REGISTRALES" type="int" default="35">
+  Registry data
+</ParamField>
+
+<ParamField path="CREDITO_INCOBRABLE" type="int" default="36">
+  Bad debt
+</ParamField>
+
+<ParamField path="EMPRESARIO_INDIVIDUAL" type="int" default="37">
+  Individual entrepreneur
+</ParamField>
+
+<ParamField path="ANOTACION_PREVENTIVA_DEMANDA" type="int" default="53">
+  Preventive note - lawsuit for challenging corporate resolutions
+</ParamField>
+
+<ParamField path="ANOTACION_PREVENTIVA_DECLARACION" type="int" default="54">
+  Preventive note - declaration of debtor failure
+</ParamField>
+
+## Keyword Mappings
+
+ACTO provides mappings between Spanish keywords found in BORME documents and their corresponding constants.
+
+### ALL_KEYWORDS
+
+A list containing all Spanish keywords that can be used to identify acts:
+
+```python
+from bormeparser.acto import ACTO
+
+# Access all keywords
+all_keywords = ACTO.ALL_KEYWORDS
+
+print(len(all_keywords))  # 70+ keywords
+print(all_keywords[:5])
+# ['Nombramientos', 'Revocaciones', 'Ceses/Dimisiones', ...]
+```
+
+### Keyword Categories
+
+Keywords are organized into different categories based on their formatting:
+
+- **ARG_KEYWORDS** - Keywords followed by arguments (e.g., "Nombramientos")
+- **NOARG_KEYWORDS** - Keywords without arguments (e.g., "Sociedad unipersonal")
+- **COLON_KEYWORDS** - Keywords followed by a colon (e.g., "Fe de erratas")
+- **BOLD_KEYWORDS** - Keywords appearing in bold text
+- **ENDING_KEYWORDS** - Keywords at the end of sections (e.g., "Datos registrales")
+
+## Usage Examples
+
+### Accessing Act Constants
+
+```python
+from bormeparser.acto import ACTO
+
+# Access specific act types
+print(ACTO.NOMBRAMIENTOS)  # 1
+print(ACTO.CONSTITUCION)  # 12
+print(ACTO.AMPLIACION_DE_CAPITAL)  # 15
+print(ACTO.FUSION_POR_ABSORCION)  # 18
+```
+
+### Working with Keywords
+
+```python
+from bormeparser.acto import ACTO
+
+# Check if a keyword exists
+if 'Nombramientos' in ACTO.ALL_KEYWORDS:
+    print("Found appointments keyword")
+
+# Get the constant for a keyword
+keyword = 'Nombramientos'
+if keyword in ACTO._arg_keywords:
+    act_type = ACTO._arg_keywords[keyword]
+    print(f"{keyword} maps to: {act_type}")
+    # Output: Nombramientos maps to: 1
+```
+
+### Filtering Acts by Type
+
+```python
+from bormeparser.acto import ACTO
+
+# Check for governance-related acts
+governance_acts = [
+    ACTO.NOMBRAMIENTOS,
+    ACTO.REVOCACIONES,
+    ACTO.CESES_DIMISIONES,
+    ACTO.REELECCIONES
+]
+
+# Check for capital operations
+capital_acts = [
+    ACTO.AMPLIACION_DE_CAPITAL,
+    ACTO.REDUCCION_DE_CAPITAL,
+    ACTO.ACUERDO_AMPLIACION_CAPITAL_SOCIAL_SIN_EJECUTAR
+]
+
+# Check for insolvency situations
+insolvency_acts = [
+    ACTO.SITUACION_CONCURSAL,
+    ACTO.SUSPENSION_DE_PAGOS,
+    ACTO.QUIEBRA
+]
+```
+
+### Complete Example
+
+```python
+from bormeparser import Borme
+from bormeparser.acto import ACTO
+
+# Parse a BORME file
+borme = Borme.from_json('borme.json')
+
+# Filter companies with appointments
+for company in borme.get_companies():
+    acts = company.get_acts()
+    
+    if ACTO.NOMBRAMIENTOS in acts:
+        print(f"{company.name} has appointments:")
+        for person in acts[ACTO.NOMBRAMIENTOS]:
+            print(f"  - {person}")
+    
+    if ACTO.AMPLIACION_DE_CAPITAL in acts:
+        print(f"{company.name} is increasing capital")
+    
+    if ACTO.SITUACION_CONCURSAL in acts:
+        print(f"WARNING: {company.name} is insolvent")
+```
+
+## Spanish Keywords Reference
+
+Key Spanish terms and their English translations:
+
+| Spanish | English | Constant |
+|---------|---------|----------|
+| Nombramientos | Appointments | `NOMBRAMIENTOS` |
+| Revocaciones | Revocations | `REVOCACIONES` |
+| Ceses/Dimisiones | Resignations/Dismissals | `CESES_DIMISIONES` |
+| Constitución | Formation | `CONSTITUCION` |
+| Disolución | Dissolution | `DISOLUCION` |
+| Ampliación de capital | Capital increase | `AMPLIACION_DE_CAPITAL` |
+| Reducción de capital | Capital reduction | `REDUCCION_DE_CAPITAL` |
+| Fusión por absorción | Merger by absorption | `FUSION_POR_ABSORCION` |
+| Situación concursal | Insolvency | `SITUACION_CONCURSAL` |
+| Cambio de domicilio social | Registered address change | `CAMBIO_DE_DOMICILIO_SOCIAL` |
+
+## Related
+
+- [CARGO enum](/api/cargo) - Corporate position types
+- [PROVINCIA enum](/api/provincia) - Spanish provinces
