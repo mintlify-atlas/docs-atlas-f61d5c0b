@@ -1,0 +1,132 @@
+---
+title: CONFIG
+description: Configuration dictionary for bormeparser
+---
+
+## Overview
+
+The `CONFIG` dictionary provides global configuration settings for bormeparser. It is used throughout the library to determine default paths and behavior.
+
+The configuration is read from the file `~/.bormecfg` if it exists, otherwise defaults are used.
+
+## Import
+
+```python
+from bormeparser import CONFIG
+```
+
+## Configuration Keys
+
+### borme_root
+
+<ParamField path="borme_root" type="str" default="~/.bormes">
+  The root directory where BORME files are stored by default
+</ParamField>
+
+This is the default directory used by download and utility functions when no explicit path is provided.
+
+## Configuration File
+
+bormeparser reads configuration from `~/.bormecfg` (in your home directory) if it exists. The file should be in INI format:
+
+```ini
+[general]
+borme_root = /path/to/your/borme/files
+```
+
+If the file doesn't exist, bormeparser uses these defaults:
+- `borme_root`: `~/.bormes` (expanded to your home directory)
+
+## Usage
+
+### Accessing Configuration
+
+```python
+from bormeparser import CONFIG
+
+# Get the BORME root directory
+print(CONFIG["borme_root"])
+# Output: /home/user/.bormes (or your configured path)
+```
+
+### Using with Utility Functions
+
+The `CONFIG` dictionary is used by utility functions as the default directory:
+
+```python
+from bormeparser import CONFIG
+from bormeparser.utils import get_borme_xml_filepath
+from datetime import date
+
+# Uses CONFIG["borme_root"] as default directory
+filepath = get_borme_xml_filepath(date(2015, 2, 10))
+print(filepath)
+# Output: /home/user/.bormes/2015/02/10/BORME-S-20150210.xml
+
+# You can override the default directory
+custom_filepath = get_borme_xml_filepath(
+    date(2015, 2, 10), 
+    directory="/custom/path"
+)
+print(custom_filepath)
+# Output: /custom/path/2015/02/10/BORME-S-20150210.xml
+```
+
+### Creating a Configuration File
+
+To customize the default BORME storage location, create a `~/.bormecfg` file:
+
+<Steps>
+  <Step title="Create the configuration file">
+    ```bash
+    nano ~/.bormecfg
+    ```
+  </Step>
+
+  <Step title="Add the configuration">
+    ```ini
+    [general]
+    borme_root = /path/to/your/borme/files
+    ```
+  </Step>
+
+  <Step title="Verify the configuration">
+    ```python
+    from bormeparser import CONFIG
+    print(CONFIG["borme_root"])
+    # Output: /path/to/your/borme/files
+    ```
+  </Step>
+</Steps>
+
+## Configuration Location
+
+The configuration file must be located at:
+- Linux/macOS: `~/.bormecfg` (in your home directory)
+- Windows: `C:\Users\YourUsername\.bormecfg`
+
+<Note>
+The tilde (`~`) is automatically expanded to your home directory path.
+</Note>
+
+## Default Behavior
+
+If no configuration file exists, bormeparser uses sensible defaults:
+
+```python
+DEFAULTS = {
+    'borme_root': os.path.expanduser("~/.bormes")
+}
+```
+
+This means BORME files will be stored in a `.bormes` directory in your home folder by default.
+
+## Source Code Reference
+
+The CONFIG implementation can be found in `bormeparser/config.py:23-34`.
+
+## See Also
+
+- [Utility Functions](/api/utils) - Functions that use CONFIG
+- [Download Functions](/api/download) - Downloading BORME files
+- [Installation](/installation) - Setting up bormeparser

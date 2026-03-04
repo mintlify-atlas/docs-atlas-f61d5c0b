@@ -77,13 +77,15 @@
               "api/acto",
               "api/cargo",
               "api/provincia",
-              "api/seccion"
+              "api/seccion",
+              "api/emisor"
             ]
           },
           {
             "group": "Utilities",
             "pages": [
               "api/utils",
+              "api/config",
               "api/exceptions"
             ]
           }

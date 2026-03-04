@@ -1,0 +1,107 @@
+---
+title: EMISOR
+description: BORME section emitter type constants
+---
+
+## Overview
+
+The `EMISOR` class provides constants that identify different types of emitters in BORME sections. These constants represent the categories under which announcements and acts are published in the BORME.
+
+## Import
+
+```python
+from bormeparser import EMISOR
+```
+
+## Constants
+
+### Section A - ACTOS_INSCRITOS
+
+<ParamField path="ACTOS_INSCRITOS" type="str" default="'Actos inscritos'">
+  Registered acts published in Section A of the BORME
+</ParamField>
+
+Section A contains all registered acts such as appointments, company constitution, capital changes, and other mercantile registry operations.
+
+### Section B - OTROS_ACTOS
+
+<ParamField path="OTROS_ACTOS" type="str" default="'Otros actos publicados en el Registro Mercantil'">
+  Other acts published in Section B of the BORME
+</ParamField>
+
+Section B contains other acts published by the Mercantile Registry that don't fall under registered acts.
+
+### Section C Emitters
+
+Section C announcements are organized by type:
+
+<ParamField path="BALANCES" type="str" default="'BALANCES'">
+  Balance sheet announcements
+</ParamField>
+
+<ParamField path="CONVOCATORIAS_JUNTAS" type="str" default="'CONVOCATORIAS DE JUNTAS'">
+  Shareholder meeting announcements
+</ParamField>
+
+<ParamField path="ESCISIONES" type="str" default="'ESCISIÓN DE EMPRESAS'">
+  Company demerger announcements
+</ParamField>
+
+<ParamField path="TRANSFORMACIONES" type="str" default="'TRANSFORMACIÓN DE EMPRESAS'">
+  Company transformation announcements
+</ParamField>
+
+<ParamField path="FUSIONES_ABORCIONES" type="str" default="'FUSIONES Y ABSORCIONES DE EMPRESAS'">
+  Merger and acquisition announcements
+</ParamField>
+
+<ParamField path="AUMENTO_CAPITAL" type="str" default="'AUMENTO DE CAPITAL'">
+  Capital increase announcements
+</ParamField>
+
+<ParamField path="REDUCCION_CAPITAL" type="str" default="'REDUCCIÓN DE CAPITAL'">
+  Capital reduction announcements
+</ParamField>
+
+<ParamField path="OTROS_ANUNCIOS_AVISOS_LEGALES" type="str" default="'OTROS ANUNCIOS Y AVISOS LEGALES'">
+  Other announcements and legal notices
+</ParamField>
+
+## Usage Example
+
+The EMISOR constants can be used to identify the type of content in BORME files:
+
+```python
+from bormeparser import EMISOR
+
+# Check emitter type for Section A
+if emitter == EMISOR.ACTOS_INSCRITOS:
+    print("This is a registered acts publication")
+
+# Check emitter type for Section C
+if emitter == EMISOR.BALANCES:
+    print("This is a balance sheet announcement")
+elif emitter == EMISOR.CONVOCATORIAS_JUNTAS:
+    print("This is a shareholder meeting announcement")
+```
+
+## Emitter Types by Section
+
+| Section | Emitter Constant | Description |
+|---------|-----------------|-------------|
+| A | `ACTOS_INSCRITOS` | Registered acts |
+| B | `OTROS_ACTOS` | Other published acts |
+| C | `BALANCES` | Balance sheets |
+| C | `CONVOCATORIAS_JUNTAS` | Shareholder meetings |
+| C | `ESCISIONES` | Company demergers |
+| C | `TRANSFORMACIONES` | Company transformations |
+| C | `FUSIONES_ABORCIONES` | Mergers and acquisitions |
+| C | `AUMENTO_CAPITAL` | Capital increases |
+| C | `REDUCCION_CAPITAL` | Capital reductions |
+| C | `OTROS_ANUNCIOS_AVISOS_LEGALES` | Other legal notices |
+
+## See Also
+
+- [SECCION](/api/seccion) - BORME section constants
+- [BORME Overview](/concepts/borme-overview) - Understanding BORME structure
+- [Sections](/concepts/sections) - Detailed explanation of sections
